@@ -143,6 +143,15 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
                           alt={video.title}
                           referrerPolicy="no-referrer"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          onError={(e) => {
+                            // Automatically fall back to Google Drive video thumbnail if possible
+                            const driveId = parseGoogleDriveUrl(video.videoUrl);
+                            if (driveId) {
+                              (e.target as HTMLImageElement).src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w600`;
+                            } else {
+                              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80";
+                            }
+                          }}
                         />
                       ) : parseGoogleDriveUrl(video.videoUrl) ? (
                         <img 

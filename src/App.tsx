@@ -3,6 +3,7 @@ import { INITIAL_VIDEOS } from "./data/videos";
 import { Video, Comment } from "./types";
 import VideoPlayer from "./components/VideoPlayer";
 import VideoList from "./components/VideoList";
+import CommentsSection from "./components/CommentsSection";
 import Watchlist from "./components/Watchlist";
 import AdminPanel from "./components/AdminPanel";
 import SEODashboard from "./components/SEODashboard";
@@ -170,6 +171,23 @@ export default function App() {
     setBookmarkedVideoIds(prev => 
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
+  };
+
+  // Add Interactive Comments and associate them with selected video IDs
+  const handleAddComment = (videoId: string, text: string, author: string) => {
+    const newComment: Comment = {
+      id: `c_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+      author: author || "Anonymous Viewer",
+      avatar: "",
+      text,
+      timestamp: "Just now"
+    };
+
+    setCommentsMap(prev => {
+      const updated = { ...prev };
+      updated[videoId] = [newComment, ...(updated[videoId] || [])];
+      return updated;
+    });
   };
 
 
@@ -359,6 +377,13 @@ export default function App() {
                   onToggleLike={handleToggleLike}
                   onToggleBookmark={handleToggleBookmark}
                   onImportVideo={handleImportVideo}
+                />
+
+                {/* Interactive User Conversation Board */}
+                <CommentsSection
+                  video={activeVideo}
+                  comments={commentsMap[activeVideo.id] || []}
+                  onAddComment={handleAddComment}
                 />
 
 

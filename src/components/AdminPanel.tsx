@@ -706,6 +706,14 @@ export default function AdminPanel({
                             alt="" 
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover" 
+                            onError={(e) => {
+                              const driveId = parseGoogleDriveUrl(video.videoUrl);
+                              if (driveId) {
+                                (e.target as HTMLImageElement).src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w200`;
+                              } else {
+                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80";
+                              }
+                            }}
                           />
                         ) : parseGoogleDriveUrl(video.videoUrl) ? (
                           <img 
