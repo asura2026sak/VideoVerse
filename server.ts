@@ -232,13 +232,34 @@ const upload = multer({
 app.get("/api/videos", (req, res) => {
   try {
     // Automatically re-sync database with physical .mp4 files on every index fetch
-    syncPhysicalUploadsWithDatabase();
+    try {
+      syncPhysicalUploadsWithDatabase();
+    } catch (syncErr) {
+      console.error("Sync files failed during GET videos", syncErr);
+    }
 
-    const raw = fs.readFileSync(dbPath, "utf-8");
-    const list = JSON.parse(raw);
+    if (!fs.existsSync(dbPath)) {
+      fs.writeFileSync(dbPath, JSON.stringify(INITIAL_VIDEOS, null, 2), "utf-8");
+    }
+
+    let raw = fs.readFileSync(dbPath, "utf-8");
+    let list;
+    try {
+      list = JSON.parse(raw);
+    } catch {
+      console.warn("⚠️ corrupt videos-db.json found. Restoring to INITIAL_VIDEOS.");
+      list = INITIAL_VIDEOS;
+      fs.writeFileSync(dbPath, JSON.stringify(INITIAL_VIDEOS, null, 2), "utf-8");
+    }
+
+    if (!Array.isArray(list) || list.length === 0) {
+      list = INITIAL_VIDEOS;
+    }
+
     res.json({ success: true, videos: list });
   } catch (err) {
-    res.status(500).json({ success: false, error: "Failed to read database" });
+    console.error("Failed to read database, sending fallback INITIAL_VIDEOS", err);
+    res.json({ success: true, videos: INITIAL_VIDEOS });
   }
 });
 

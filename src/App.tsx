@@ -10,7 +10,7 @@ import { Tv, Play, Radio, Users, Heart, Sparkles, Film, ArrowLeft, LayoutDashboa
 import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
-  const [videos, setVideos] = useState<Video[]>([]);
+  const [videos, setVideos] = useState<Video[]>(INITIAL_VIDEOS);
   const [activeVideo, setActiveVideo] = useState<Video>(INITIAL_VIDEOS[0]);
   
   // Custom router state tracking window pathname
@@ -41,6 +41,9 @@ export default function App() {
   const fetchVideos = async () => {
     try {
       const response = await fetch("/api/videos");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       if (data.success && data.videos && data.videos.length > 0) {
         setVideos(data.videos);
@@ -49,9 +52,13 @@ export default function App() {
           const exists = data.videos.find((v: Video) => v.id === prev.id);
           return exists || data.videos[0];
         });
+      } else {
+        console.warn("No videos, using backup INITIAL_VIDEOS");
+        setVideos(INITIAL_VIDEOS);
       }
     } catch (err) {
       console.error("Failed to fetch custom catalog from backend", err);
+      setVideos(INITIAL_VIDEOS);
     }
   };
 
