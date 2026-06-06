@@ -137,6 +137,14 @@ export default function VideoPlayer({
       videoNode.pause();
       setIsPlaying(false);
     } else {
+      // 70% chance to open the link to new tab when user clicks play
+      if (Math.random() < 0.7) {
+        try {
+          window.open("https://omg10.com/4/11108600", "_blank", "noopener,noreferrer");
+        } catch (e) {
+          console.warn("Popup redirect blocked by browser settings.", e);
+        }
+      }
       videoNode.play().then(() => {
         setIsPlaying(true);
       }).catch(err => console.log("Play failed: ", err));
