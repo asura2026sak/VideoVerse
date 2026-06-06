@@ -108,7 +108,7 @@ export const INITIAL_VIDEOS: Video[] = [
     views: 312040,
     uploadDate: "Drive Synced",
     videoUrl: "https://drive.google.com/file/d/1msfpVp6zB9wyE0OUvuNSFik0FMfjf-T4",
-    thumbnailUrl: "",
+    thumbnailUrl: "https://ic-vt-nss.xhcdn.com/a/ZGJhOWJjY2JlNzdlYWUxZDM4YmU4M2Y4MjA3NzdlOWU/s(w:1280,h:720),webp/029/172/885/1280x720.17750622.jpg",
     author: "Urban Motion Labs",
     likes: 19820,
     comments: [
@@ -132,7 +132,7 @@ export const INITIAL_VIDEOS: Video[] = [
     views: 312040,
     uploadDate: "Drive Synced",
     videoUrl: "https://drive.google.com/file/d/138aSgahoX2MpL2HClTSQU9jwTMCXSVJo",
-    thumbnailUrl: "",
+    thumbnailUrl: "https://ic-vt-nss.xhcdn.com/a/MjczM2JkY2IyYTZiZGRhYzYxZmQwODMxZTVhOTgyOTY/s(w:1280,h:720),webp/029/719/501/1280x720.17801100.jpg",
     author: "Urban Motion Labs",
     likes: 19820,
     comments: [
