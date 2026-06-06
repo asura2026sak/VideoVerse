@@ -206,6 +206,18 @@ syncPhysicalUploadsWithDatabase();
 
 app.use(express.json());
 
+// API Cache-Control Middleware to guarantee dynamic edits in videos-db.json show up on client refresh
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) {
+    res.set({
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
+  }
+  next();
+});
+
 // Serve uploaded assets statically
 app.use("/uploads", express.static(uploadsDir));
 

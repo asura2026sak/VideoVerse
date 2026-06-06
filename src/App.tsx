@@ -41,7 +41,8 @@ export default function App() {
   // Fetch full video catalogs dynamically from full-stack system backend
   const fetchVideos = async () => {
     try {
-      const response = await fetch("/api/videos");
+      // Use dynamic timestamp to prevent browser caching of GET replies
+      const response = await fetch(`/api/videos?_t=${Date.now()}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -52,6 +53,19 @@ export default function App() {
           if (!prev) return data.videos[0];
           const exists = data.videos.find((v: Video) => v.id === prev.id);
           return exists || data.videos[0];
+        });
+        
+        // Ensure any newly fetched or manually added videos have comment slots initialized
+        setCommentsMap(prev => {
+          const updated = { ...prev };
+          let changed = false;
+          data.videos.forEach((v: Video) => {
+            if (!updated[v.id]) {
+              updated[v.id] = v.comments || [];
+              changed = true;
+            }
+          });
+          return changed ? updated : prev;
         });
       } else {
         console.warn("No videos, using backup INITIAL_VIDEOS");
