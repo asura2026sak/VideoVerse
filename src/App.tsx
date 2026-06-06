@@ -6,6 +6,7 @@ import VideoList from "./components/VideoList";
 import Watchlist from "./components/Watchlist";
 import AdminPanel from "./components/AdminPanel";
 import SEODashboard from "./components/SEODashboard";
+import SponsorAd from "./components/SponsorAd";
 import { Tv, Play, Radio, Users, Heart, Sparkles, Film, ArrowLeft, LayoutDashboard, Database } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -365,6 +366,9 @@ export default function App() {
               </div>
 
             </div>
+
+            {/* Sponsored Third-Party Monetization Ads & Links */}
+            <SponsorAd />
 
             {/* Elegant About Us and Brand Information */}
             <div className="bg-slate-900/30 border border-slate-900/80 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row gap-6 justify-between items-start md:items-center mt-6">
