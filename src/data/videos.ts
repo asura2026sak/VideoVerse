@@ -72,5 +72,77 @@ export const INITIAL_VIDEOS: Video[] = [
         timestamp: "5 hours ago"
       }
     ]
+  },
+  {
+    id: "v_drive_user_4",
+    title: "Cyberpunk Street Grid Study",
+    description: "Cyberpunk street grid showing neon signage, clean traffic contrast, and fast movement study dynamically framed.",
+    category: "Action",
+    tags: ["google-drive", "city", "action", "timelapse", "night"],
+    duration: "0:15",
+    durationSeconds: 15,
+    views: 312040,
+    uploadDate: "Drive Synced",
+    videoUrl: "https://drive.google.com/file/d/1IyraG4e64zzn5DoovWF7HrF3Myh-S2fl",
+    thumbnailUrl: "",
+    author: "Urban Motion Labs",
+    likes: 19820,
+    comments: [
+      {
+        id: "c_dr4_1",
+        author: "Elena Petrova",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80",
+        text: "Dynamic and super clean contrast. Plays back with zero stuttering!",
+        timestamp: "5 hours ago"
+      }
+    ]
+  },
+  {
+    id: "v_drive_user_5",
+    title: "Luxury Hotel Lobby Cinematic Journey",
+    description: "An aesthetic cinematic narrative sequence capturing a modern luxury hotel reception lobby environment under twilight hues.",
+    category: "Action",
+    tags: ["google-drive", "city", "action", "timelapse", "night"],
+    duration: "0:15",
+    durationSeconds: 15,
+    views: 312040,
+    uploadDate: "Drive Synced",
+    videoUrl: "https://drive.google.com/file/d/1msfpVp6zB9wyE0OUvuNSFik0FMfjf-T4",
+    thumbnailUrl: "",
+    author: "Urban Motion Labs",
+    likes: 19820,
+    comments: [
+      {
+        id: "c_dr5_1",
+        author: "Elena Petrova",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80",
+        text: "Dynamic and super clean contrast. Plays back with zero stuttering!",
+        timestamp: "5 hours ago"
+      }
+    ]
+  },
+  {
+    id: "v_drive_user_6",
+    title: "Aesthetic Morning POV Forest Retreat",
+    description: "A peaceful deep woods cabin retreat capturing warm morning mist drifting across cozy interior layouts and tall green pines.",
+    category: "Action",
+    tags: ["google-drive", "city", "action", "timelapse", "night"],
+    duration: "0:15",
+    durationSeconds: 15,
+    views: 312040,
+    uploadDate: "Drive Synced",
+    videoUrl: "https://drive.google.com/file/d/138aSgahoX2MpL2HClTSQU9jwTMCXSVJo",
+    thumbnailUrl: "",
+    author: "Urban Motion Labs",
+    likes: 19820,
+    comments: [
+      {
+        id: "c_dr6_1",
+        author: "Elena Petrova",
+        avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80",
+        text: "Dynamic and super clean contrast. Plays back with zero stuttering!",
+        timestamp: "5 hours ago"
+      }
+    ]
   }
 ];
