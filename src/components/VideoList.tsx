@@ -122,23 +122,14 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
               </button>
             </motion.div>
           ) : (
-            <motion.div 
-              layout
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1 gap-4"
-            >
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1 gap-4">
               {filteredAndSortedVideos.map((video) => {
                 const isActive = video.id === activeVideoId;
                 return (
-                  <motion.div
+                  <div
                     key={video.id}
-                    layoutId={`video-card-${video.id}`}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    whileHover={{ scale: 1.01, y: -2 }}
                     onClick={() => onSelectVideo(video)}
-                    className={`group cursor-pointer rounded-xl overflow-hidden border p-3 flex flex-col lg:flex-row gap-4 transition-all duration-200 ${
+                    className={`group cursor-pointer rounded-xl overflow-hidden border p-3 flex flex-col lg:flex-row gap-4 transition-all duration-300 transform hover:scale-[1.015] hover:-translate-y-0.5 ${
                       isActive 
                         ? "bg-slate-800/60 border-emerald-500/80 shadow-md shadow-emerald-500/5 relative" 
                         : "bg-slate-900/30 border-slate-800/70 hover:bg-slate-800/30 hover:border-slate-700/80"
@@ -237,10 +228,10 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
                       </div>
                     </div>
 
-                  </motion.div>
+                  </div>
                 );
               })}
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>

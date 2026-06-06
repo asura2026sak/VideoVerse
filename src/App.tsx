@@ -352,7 +352,7 @@ export default function App() {
               </div>
 
                {/* Right Column (Category Slider + Search Filters + Stream Listing) */}
-              <div className="lg:col-span-4 flex flex-col gap-6 sticky top-20 max-h-[90vh] overflow-y-auto pr-2 no-scrollbar pb-12 font-sans">
+              <div className="lg:col-span-4 flex flex-col gap-6 lg:sticky lg:top-24 h-auto max-h-none lg:max-h-[calc(100vh-120px)] overflow-y-visible lg:overflow-y-auto scroll-smooth overscroll-contain pr-2 pb-12 font-sans">
                 
 
 
