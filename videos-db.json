@@ -1,10 +1,45 @@
 [
   {
+    "id": "v_local_escapes",
+    "title": "Local Patagonia Escapes",
+    "description": "A physical MP4 file pre-seeded and stored directly on the physical server Node directory (/uploads/sample_escapes.mp4). Served locally from the active file system.",
+    "category": "Landscape",
+    "tags": [
+      "local",
+      "preseeded",
+      "mp4",
+      "landscape"
+    ],
+    "duration": "0:15",
+    "durationSeconds": 15,
+    "views": 247,
+    "uploadDate": "Pre-seeded on Server",
+    "videoUrl": "/uploads/sample_escapes.mp4",
+    "thumbnailUrl": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",
+    "author": "Server Storage System",
+    "likes": 84,
+    "comments": [
+      {
+        "id": "c_seed_1",
+        "author": "Automated System Check",
+        "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80",
+        "text": "Physical MP4 checked, verified, and playing instantly from local server folder. High transfer rate!",
+        "timestamp": "Just now"
+      }
+    ]
+  },
+  {
     "id": "v_drive_user_1",
     "title": "Stepsister Was Late for the Gym. Only Few Minutes Left for Warm-up",
     "description": "Stepsister Was Late for the Gym. Only Few Minutes Left for Warm-up",
     "category": "Cinematic",
-    "tags": ["google-drive", "cloud", "drone", "cinematic", "nature"],
+    "tags": [
+      "google-drive",
+      "cloud",
+      "drone",
+      "cinematic",
+      "nature"
+    ],
     "duration": "0:15",
     "durationSeconds": 15,
     "views": 124503,
@@ -28,7 +63,13 @@
     "title": "I just asked my stepbrother to give me a massage... ",
     "description": "I just asked my stepbrother to give me a massage... ",
     "category": "Landscape",
-    "tags": ["google-drive", "landscape", "wilderness", "peaceful", "relaxation"],
+    "tags": [
+      "google-drive",
+      "landscape",
+      "wilderness",
+      "peaceful",
+      "relaxation"
+    ],
     "duration": "0:15",
     "durationSeconds": 15,
     "views": 89431,
@@ -49,10 +90,16 @@
   },
   {
     "id": "v_drive_user_3",
-    "title": "Xvideo",
-    "description": "xvideo",
+    "title": "Neon Metropolis Time-Lapse",
+    "description": "Vibrant high-speed motion study capturing urban streets beneath soaring neon skyscrapers, colorful night grids, and shimmering cityscape landmarks.",
     "category": "Action",
-    "tags": ["google-drive", "city", "action", "timelapse", "night"],
+    "tags": [
+      "google-drive",
+      "city",
+      "action",
+      "timelapse",
+      "night"
+    ],
     "duration": "0:15",
     "durationSeconds": 15,
     "views": 312040,
@@ -73,10 +120,16 @@
   },
   {
     "id": "v_drive_user_4",
-    "title": "Xvideo",
-    "description": "xvideo",
+    "title": "Cyberpunk Street Grid Study",
+    "description": "Cyberpunk street grid showing neon signage, clean traffic contrast, and fast movement study dynamically framed.",
     "category": "Action",
-    "tags": ["google-drive", "city", "action", "timelapse", "night"],
+    "tags": [
+      "google-drive",
+      "city",
+      "action",
+      "timelapse",
+      "night"
+    ],
     "duration": "0:15",
     "durationSeconds": 15,
     "views": 312040,
@@ -87,7 +140,7 @@
     "likes": 19820,
     "comments": [
       {
-        "id": "c_dr3_1",
+        "id": "c_dr4_1",
         "author": "Elena Petrova",
         "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80",
         "text": "Dynamic and super clean contrast. Plays back with zero stuttering!",
@@ -97,21 +150,27 @@
   },
   {
     "id": "v_drive_user_5",
-    "title": "Girl Seduced Service Man in Hotel, He Had No Chance...",
-    "description": "Girl Seduced Service Man in Hotel, He Had No Chance... Explore trending and viral videos on VideoVerse. Watch popular content, discover new clips, and stay updated with the latest video trends from around the world.",
+    "title": "Luxury Hotel Lobby Cinematic Journey",
+    "description": "An aesthetic cinematic narrative sequence capturing a modern luxury hotel reception lobby environment under twilight hues.",
     "category": "Action",
-    "tags": ["google-drive", "city", "action", "timelapse", "night"],
+    "tags": [
+      "google-drive",
+      "city",
+      "action",
+      "timelapse",
+      "night"
+    ],
     "duration": "0:15",
     "durationSeconds": 15,
     "views": 312040,
     "uploadDate": "Drive Synced",
     "videoUrl": "https://drive.google.com/file/d/1msfpVp6zB9wyE0OUvuNSFik0FMfjf-T4",
-    "thumbnailUrl": "https://ic-vt-nss.xhcdn.com/a/ZGJhOWJjY2JlNzdlYWUxZDM4YmU4M2Y4MjA3NzdlOWU/s(w:1280,h:720),webp/029/172/885/1280x720.17750622.jpg",
+    "thumbnailUrl": "",
     "author": "Urban Motion Labs",
     "likes": 19820,
     "comments": [
       {
-        "id": "c_dr3_1",
+        "id": "c_dr5_1",
         "author": "Elena Petrova",
         "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80",
         "text": "Dynamic and super clean contrast. Plays back with zero stuttering!",
@@ -121,21 +180,27 @@
   },
   {
     "id": "v_drive_user_6",
-    "title": "steamy morning POV: she was just my Roommate...until this morning",
-    "description": "steamy morning POV: she was just my Roommate...until this morning Explore trending and viral videos on VideoVerse. Watch popular content, discover new clips, and stay updated with the latest video trends from around the world.",
+    "title": "Aesthetic Morning POV Forest Retreat",
+    "description": "A peaceful deep woods cabin retreat capturing warm morning mist drifting across cozy interior layouts and tall green pines.",
     "category": "Action",
-    "tags": ["google-drive", "city", "action", "timelapse", "night"],
+    "tags": [
+      "google-drive",
+      "city",
+      "action",
+      "timelapse",
+      "night"
+    ],
     "duration": "0:15",
     "durationSeconds": 15,
     "views": 312040,
     "uploadDate": "Drive Synced",
     "videoUrl": "https://drive.google.com/file/d/138aSgahoX2MpL2HClTSQU9jwTMCXSVJo",
-    "thumbnailUrl": "https://ic-vt-nss.xhcdn.com/a/MjczM2JkY2IyYTZiZGRhYzYxZmQwODMxZTVhOTgyOTY/s(w:1280,h:720),webp/029/719/501/1280x720.17801100.jpg",
+    "thumbnailUrl": "",
     "author": "Urban Motion Labs",
     "likes": 19820,
     "comments": [
       {
-        "id": "c_dr3_1",
+        "id": "c_dr6_1",
         "author": "Elena Petrova",
         "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80",
         "text": "Dynamic and super clean contrast. Plays back with zero stuttering!",
