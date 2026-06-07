@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Search, Eye, Clock, Play } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { Search, Eye, Clock, Play, ChevronDown, SlidersHorizontal, ArrowUpDown, CalendarDays } from "lucide-react";
 import { Video } from "../types";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -33,6 +33,22 @@ interface VideoListProps {
 
 export default function VideoList({ videos, activeVideoId, onSelectVideo }: VideoListProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"newest" | "most-viewed" | "alphabetical">("most-viewed");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // Filtering & Sorting Logic
   const filteredAndSortedVideos = useMemo(() => {
@@ -50,11 +66,36 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
       );
     }
 
-    // Default sort by popularity (views) to keep clean
-    result.sort((a, b) => b.views - a.views);
+    // 2. Sorting based on active dropdown selection
+    if (sortBy === "most-viewed") {
+      result.sort((a, b) => b.views - a.views);
+    } else if (sortBy === "alphabetical") {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortBy === "newest") {
+      result.sort((a, b) => {
+        const getPriority = (dateStr: string) => {
+          if (!dateStr) return 0;
+          const lower = dateStr.toLowerCase();
+          if (lower.includes("now")) return 5;
+          if (lower.includes("import")) return 4;
+          if (lower.includes("append") || lower.includes("link")) return 3;
+          if (lower.includes("synced")) return 2;
+          if (lower.includes("exist") || lower.includes("store")) return 1;
+          return 0;
+        };
+        const pA = getPriority(a.uploadDate);
+        const pB = getPriority(b.uploadDate);
+        if (pB !== pA) return pB - pA;
+        
+        // Fallback to array index in reverse: newer items are placed later
+        const indexA = videos.findIndex(v => v.id === a.id);
+        const indexB = videos.findIndex(v => v.id === b.id);
+        return indexB - indexA;
+      });
+    }
 
     return result;
-  }, [videos, searchQuery]);
+  }, [videos, searchQuery, sortBy]);
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -64,10 +105,10 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
     <div className="flex flex-col gap-6">
       
       {/* Search and Filters Hub */}
-      <div className="bg-slate-900/40 backdrop-blur-md p-4 rounded-2xl border border-slate-800/60 flex flex-col gap-4">
+      <div className="bg-slate-900/40 backdrop-blur-md p-4 rounded-2xl border border-slate-800/60 flex flex-col sm:flex-row gap-3">
         
-        {/* Search Input ONLY */}
-        <div className="relative">
+        {/* Search Input Box */}
+        <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input
             type="text"
@@ -84,6 +125,85 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
               Clear
             </button>
           )}
+        </div>
+
+        {/* Sorting Dropdown Component */}
+        <div ref={dropdownRef} className="relative w-full sm:w-52 shrink-0">
+          <button
+            onClick={() => setIsDropdownOpen(prev => !prev)}
+            className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-slate-950/75 border border-slate-800 text-slate-100 text-sm hover:border-slate-700 hover:bg-slate-950 transition-all cursor-pointer h-10 select-none outline-none focus:border-emerald-500"
+          >
+            <div className="flex items-center gap-1.5 text-slate-300">
+              <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="font-medium text-xs text-slate-400">Sort:</span>
+              <span className="text-xs font-semibold text-white">
+                {sortBy === "newest" && "Newest"}
+                {sortBy === "most-viewed" && "Most Viewed"}
+                {sortBy === "alphabetical" && "Alphabetical"}
+              </span>
+            </div>
+            <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isDropdownOpen ? "rotate-180 text-emerald-400" : ""}`} />
+          </button>
+
+          <AnimatePresence>
+            {isDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="absolute right-0 mt-2 w-full bg-slate-950 border border-slate-800 rounded-xl shadow-2xl overflow-hidden z-30 p-1"
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSortBy("newest");
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left cursor-pointer ${
+                    sortBy === "newest" 
+                      ? "bg-emerald-500/10 text-emerald-400" 
+                      : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                  }`}
+                >
+                  <CalendarDays className={`w-3.5 h-3.5 ${sortBy === "newest" ? "text-emerald-400" : "text-slate-400"}`} />
+                  <span>Newest</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSortBy("most-viewed");
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left cursor-pointer ${
+                    sortBy === "most-viewed" 
+                      ? "bg-emerald-500/10 text-emerald-400" 
+                      : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                  }`}
+                >
+                  <Eye className={`w-3.5 h-3.5 ${sortBy === "most-viewed" ? "text-emerald-400" : "text-slate-400"}`} />
+                  <span>Most Viewed</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSortBy("alphabetical");
+                    setIsDropdownOpen(false);
+                  }}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left cursor-pointer ${
+                    sortBy === "alphabetical" 
+                      ? "bg-emerald-500/10 text-emerald-400" 
+                      : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                  }`}
+                >
+                  <ArrowUpDown className={`w-3.5 h-3.5 ${sortBy === "alphabetical" ? "text-emerald-400" : "text-slate-400"}`} />
+                  <span>Alphabetical</span>
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
       </div>
@@ -122,24 +242,24 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
               </button>
             </motion.div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-5">
               {filteredAndSortedVideos.map((video) => {
                 const isActive = video.id === activeVideoId;
                 return (
                   <div
                     key={video.id}
                     onClick={() => onSelectVideo(video)}
-                    className={`group cursor-pointer rounded-xl overflow-hidden border p-3 flex flex-col lg:flex-row gap-4 transition-all duration-300 transform hover:scale-[1.015] hover:-translate-y-0.5 ${
+                    className={`group cursor-pointer rounded-xl overflow-hidden border p-2.5 sm:p-3.5 flex flex-col gap-2 sm:gap-3 transition-all duration-300 transform hover:scale-[1.015] hover:-translate-y-0.5 ${
                       isActive 
                         ? "bg-slate-800/60 border-emerald-500/80 shadow-md shadow-emerald-500/5 relative" 
                         : "bg-slate-900/30 border-slate-800/70 hover:bg-slate-800/30 hover:border-slate-700/80"
                     }`}
                   >
                     {/* Thumbnail Column */}
-                    <div className="relative aspect-video w-full lg:w-44 shrink-0 rounded-lg overflow-hidden bg-slate-950">
+                    <div className="relative aspect-video w-full shrink-0 rounded-lg overflow-hidden bg-slate-950">
                       {video.thumbnailUrl ? (
                         <img 
-                          src={video.thumbnailUrl} 
+                           src={video.thumbnailUrl} 
                           alt={video.title}
                           referrerPolicy="no-referrer"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -179,6 +299,13 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
                       {/* Black/overlay shadow */}
                       <div className="absolute inset-0 bg-black/10 group-hover:bg-black/25 transition-colors duration-300" />
 
+                      {/* Video Duration Badge */}
+                      {video.duration && (
+                        <div className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/85 text-white font-mono text-[9px] font-bold tracking-wide z-15">
+                          {video.duration}
+                        </div>
+                      )}
+
                       {/* Active audio-visualizer simulation bar or standard icon */}
                       {isActive && (
                         <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-emerald-500 text-white text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
@@ -192,48 +319,38 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
 
                       {/* Hover play center circle icon */}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <div className="p-2.5 rounded-full bg-emerald-500 text-white shadow-md transform scale-90 group-hover:scale-100 transition-all duration-300">
-                          <Play fill="currentColor" className="w-3.5 h-3.5 translate-x-0.5" />
+                        <div className="p-2 rounded-full bg-emerald-500 text-slate-950 shadow-md transform scale-90 group-hover:scale-100 transition-all duration-300">
+                          <Play fill="currentColor" className="w-3.5 h-3.5 translate-x-0.5 fill-slate-950" />
                         </div>
                       </div>
                     </div>
 
-                    {/* Metadata Content Column */}
-                    <div className="flex-1 flex flex-col justify-between min-w-0">
+                    {/* Metadata Content Column (Tube style) */}
+                    <div className="flex-1 flex flex-col justify-between min-w-0 mt-1">
                       <div>
-                        {/* Creator/author row (no category) */}
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-[10px] text-slate-400 text-ellipsis overflow-hidden font-medium">
-                            {video.author}
-                          </span>
-                        </div>
-
-                        {/* Title */}
-                        <h3 className="text-sm font-bold leading-snug text-slate-100 group-hover:text-emerald-300 transition-colors line-clamp-1 select-text">
+                        {/* Title (max 2 lines) */}
+                        <h3 className="text-xs font-bold leading-tight text-slate-100 group-hover:text-emerald-455 transition-colors line-clamp-2 select-text tracking-tight">
                           {video.title}
                         </h3>
 
-                        {/* Description snippet */}
-                        <p className="text-[11px] text-slate-400 font-normal line-clamp-2 mt-1 select-text leading-normal">
-                          {video.description}
-                        </p>
-                      </div>
+                        {/* Author/Creator name */}
+                        <div className="mt-1 text-[11px] text-slate-400 font-semibold truncate hover:text-white transition-colors duration-250">
+                          {video.author}
+                        </div>
 
-                      {/* Count elements bar */}
-                      <div className="flex items-center gap-3.5 text-[10px] text-slate-500 font-mono mt-3 border-t border-slate-800/40 pt-2 shrink-0">
-                        <span className="flex items-center gap-1">
-                          <Eye className="w-3 h-3 text-slate-500" />
-                          {video.views >= 1000000 
-                            ? `${(video.views/1000000).toFixed(1)}M` 
-                            : video.views >= 1000 
-                              ? `${(video.views/1000).toFixed(0)}K` 
-                              : video.views
-                          }
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-500" />
-                          {video.uploadDate}
-                        </span>
+                        {/* Views and Upload Time info in compact row below Author */}
+                        <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-slate-500 font-medium font-sans">
+                          <span>
+                            {video.views >= 1000000 
+                              ? `${(video.views/1000000).toFixed(1)}M` 
+                              : video.views >= 1000 
+                                ? `${(video.views/1000).toFixed(0)}K` 
+                                : video.views
+                            } views
+                          </span>
+                          <span>•</span>
+                          <span>{video.uploadDate}</span>
+                        </div>
                       </div>
                     </div>
 

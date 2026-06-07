@@ -240,6 +240,95 @@ const upload = multer({
   }
 });
 
+// Proxy endpoint to stream Google Drive videos natively, solving iOS/Android Safari range-request issues
+app.get("/api/video-proxy", (req, res) => {
+  const fileId = req.query.id as string;
+  if (!fileId) {
+    return res.status(400).json({ error: "Missing Google Drive file ID" });
+  }
+
+  const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+  function streamUrl(url: string, headers: any) {
+    const options = {
+      headers: {
+        ...headers,
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      }
+    };
+
+    // Remove host/origin/referer to avoid CORS or security mismatch on Google Drive domains
+    delete options.headers.host;
+    delete options.headers.origin;
+    delete options.headers.referer;
+
+    https.get(url, options, (response) => {
+      // Follow Redirects recursively
+      if ([301, 302, 307, 308].includes(response.statusCode || 0)) {
+        const redirectLocation = response.headers.location;
+        if (redirectLocation) {
+          // If we received set-cookie headers, append them to the Cookie header for the redirect request
+          let newHeaders = { ...headers };
+          const setCookies = response.headers['set-cookie'];
+          if (setCookies) {
+            const parsedCookies = setCookies.map(cookie => cookie.split(';')[0]).join('; ');
+            newHeaders.Cookie = newHeaders.Cookie ? `${newHeaders.Cookie}; ${parsedCookies}` : parsedCookies;
+          }
+          return streamUrl(redirectLocation, newHeaders);
+        }
+      }
+
+      // Check if response is an HTML warning page (e.g. virus scan warning)
+      const contentType = response.headers["content-type"] || "";
+      if (contentType.includes("text/html") && response.statusCode === 200) {
+        let body = "";
+        response.on("data", (chunk) => {
+          body += chunk.toString();
+        });
+        response.on("end", () => {
+          const match = body.match(/confirm=([a-zA-Z0-9_-]+)/);
+          if (match && match[1]) {
+            const confirmToken = match[1];
+            const confirmedUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=${confirmToken}`;
+            return streamUrl(confirmedUrl, headers);
+          } else {
+            // Send back the HTML content if no confirm token found (might be an access error)
+            res.status(response.statusCode || 200);
+            res.setHeader("content-type", contentType);
+            res.send(body);
+          }
+        });
+        return;
+      }
+
+      // Stream response back to client with same status and headers
+      res.status(response.statusCode || 200);
+      
+      const headersToMatch = ["content-type", "content-length", "content-range", "accept-ranges"];
+      headersToMatch.forEach((h) => {
+        if (response.headers[h]) {
+          res.setHeader(h, response.headers[h] as string);
+        }
+      });
+
+      // Ensure content-type is video/mp4 if none returned or incorrect
+      if (!res.getHeader("content-type")) {
+        res.setHeader("content-type", "video/mp4");
+      }
+
+      response.pipe(res);
+    }).on("error", (err) => {
+      console.error("Proxy stream error:", err);
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Failed to fetch stream from source" });
+      }
+    });
+  }
+
+  const clientHeaders = { ...req.headers };
+  streamUrl(driveUrl, clientHeaders);
+});
+
 // App API routes
 app.get("/api/videos", (req, res) => {
   try {
