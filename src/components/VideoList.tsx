@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, Eye, Clock, Play, ChevronDown, SlidersHorizontal, ArrowUpDown, CalendarDays } from "lucide-react";
 import { Video } from "../types";
 import { motion, AnimatePresence } from "motion/react";
+import AdBanner from "./AdBanner";
 
 // Helper to extract File ID from various Google Drive URL patterns clientside
 export function parseGoogleDriveUrl(url: string): string | null {
@@ -103,6 +104,9 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
 
   return (
     <div className="flex flex-col gap-6">
+      
+      {/* Dynamic Ad Placement above video filters */}
+      <AdBanner />
       
       {/* Search and Filters Hub */}
       <div className="bg-slate-900/40 backdrop-blur-md p-4 rounded-2xl border border-slate-800/60 flex flex-col sm:flex-row gap-3">

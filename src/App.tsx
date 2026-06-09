@@ -6,10 +6,7 @@ import VideoList from "./components/VideoList";
 import Watchlist from "./components/Watchlist";
 import AdminPanel from "./components/AdminPanel";
 import SEODashboard from "./components/SEODashboard";
-import BannerAd468 from "./components/BannerAd468";
-import NativeBannerAd from "./components/NativeBannerAd";
 import AboutFeedbackForm from "./components/AboutFeedbackForm";
-import BottomRightAd from "./components/BottomRightAd";
 import { Tv, Play, Radio, Users, Heart, Sparkles, Film, ArrowLeft, LayoutDashboard, Database, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -200,6 +197,14 @@ export default function App() {
     setIsVideoModalOpen(true);
   };
 
+  const handleVideoEnd = () => {
+    const currentIndex = videos.findIndex(v => v.id === activeVideo.id);
+    if (currentIndex !== -1 && videos.length > 1) {
+      const nextIndex = (currentIndex + 1) % videos.length;
+      setActiveVideo(videos[nextIndex]);
+    }
+  };
+
   // Simulated metrics
   const totalLikesCalculated = likedVideoIds.length;
   const watchlistCount = bookmarkedVideoIds.length;
@@ -254,10 +259,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Header Sponsored Ad Banner */}
-          <div className="hidden lg:flex items-center justify-center mx-4 overflow-hidden h-[60px]">
-            <BannerAd468 inHeader={true} />
-          </div>
+
 
           {/* Live Simulator Indicators */}
           <div className="flex items-center gap-2 lg:gap-6 text-xs text-slate-400 font-medium">
@@ -531,14 +533,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* SECTION ABOVE DESCRIPTION - SPONSORED BANNER ADS (Matches requirement: "section above descipton add banner ads") */}
-            <div className="flex flex-col gap-5 bg-slate-950/40 p-5 border border-slate-900 rounded-2xl shadow-inner my-2">
-              <div className="text-center">
-                <span className="text-[9px] uppercase font-mono tracking-widest text-slate-500 font-extrabold">Sponsored Platform Support</span>
-              </div>
-              <BannerAd468 />
-              <NativeBannerAd />
-            </div>
+
 
             {/* Detailed Description and Mission statement */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6" id="about-detailed-descriptions">
@@ -607,11 +602,7 @@ export default function App() {
               />
             </div>
 
-            {/* Banner Ads Center Stage (above video play and list on desktop, ordered below on mobile) */}
-            <div className="flex flex-col gap-5 order-3 lg:order-2">
-              <BannerAd468 />
-              <NativeBannerAd />
-            </div>
+
 
             {/* Major Stacked Layout */}
             <div className="flex flex-col gap-10 order-2 lg:order-3 w-full animate-fadeIn" ref={playerSectionRef}>
@@ -630,14 +621,7 @@ export default function App() {
 
             </div>
 
-            {/* Sponsored ads directly above description (Matches requirement: "section above descipton add banner ads") */}
-            <div className="order-4 mt-10 w-full flex flex-col gap-4">
-              <div className="text-center">
-                <span className="text-[9px] uppercase font-mono tracking-widest text-slate-500 font-extrabold">Sponsored Platform Support</span>
-              </div>
-              <BannerAd468 />
-              <NativeBannerAd />
-            </div>
+
 
             {/* Elegant About Us and Brand Information */}
             <div className="bg-slate-900/30 border border-slate-900/80 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row gap-6 justify-between items-start md:items-center mt-4 order-4">
@@ -691,35 +675,29 @@ export default function App() {
         {isVideoModalOpen && (
           <div
             id="video-player-modal"
-            className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-0 sm:p-4 md:p-6"
+            className="fixed inset-0 z-50 bg-black flex items-center justify-center p-0"
             onClick={() => setIsVideoModalOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.98, opacity: 0, y: 10 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.98, opacity: 0, y: 10 }}
-              transition={{ ease: "easeOut", duration: 0.22 }}
-              className="relative w-full h-full sm:h-auto sm:max-h-[92vh] max-w-4xl overflow-y-auto bg-slate-900 border-0 sm:border border-slate-800 rounded-none sm:rounded-2xl shadow-2xl shadow-black flex flex-col gap-0 sm:gap-4 p-0 sm:p-5 scrollbar-thin"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ ease: "easeOut", duration: 0.2 }}
+              className="relative w-full h-full bg-black overflow-hidden flex flex-col gap-0 p-0"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header inside modal */}
-              <div className="flex items-center justify-between border-b border-slate-850 px-4 sm:px-0 py-3.5 sm:py-0 sm:pb-2.5">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-extrabold">Active Cinema Stream</span>
-                </div>
-                <button
-                  id="close-modal-btn"
-                  onClick={() => setIsVideoModalOpen(false)}
-                  className="p-1 px-2.5 rounded-lg text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-750 border border-slate-700/50 hover:border-slate-600 transition-all flex items-center gap-1 cursor-pointer text-xs font-semibold"
-                >
-                  <X className="w-3.5 h-3.5" />
-                  <span>CLOSE</span>
-                </button>
-              </div>
+              {/* Floating circular Close button on top-right over video player (saves massive vertical screen space!) */}
+              <button
+                id="close-modal-btn"
+                onClick={() => setIsVideoModalOpen(false)}
+                className="absolute top-4 right-4 z-50 p-2.5 rounded-full text-slate-350 hover:text-white bg-black/60 hover:bg-black/90 backdrop-blur-xs border border-white/10 transition-all flex items-center justify-center cursor-pointer shadow-lg active:scale-95 group"
+                title="Close Cinema Stream"
+              >
+                <X className="w-5 h-5 transition-transform group-hover:rotate-90 duration-200" />
+              </button>
 
-              {/* Video player view container */}
-              <div className="w-full">
+              {/* Video player view container - completely full-width within modal container */}
+              <div className="w-full h-full leading-none flex flex-col flex-1">
                 <VideoPlayer
                   video={activeVideo}
                   isLiked={likedVideoIds.includes(activeVideo.id)}
@@ -728,6 +706,7 @@ export default function App() {
                   onToggleBookmark={handleToggleBookmark}
                   onImportVideo={handleImportVideo}
                   isModal={true}
+                  onVideoEnd={handleVideoEnd}
                 />
               </div>
             </motion.div>
@@ -735,8 +714,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Floating Interactive CPM Network Social Bar / Push Ad overlay in bottom right */}
-      <BottomRightAd />
+
 
     </div>
   );

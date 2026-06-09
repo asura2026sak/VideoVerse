@@ -4,7 +4,7 @@ import {
   RotateCcw, ThumbsUp, Bookmark, Share2, 
   Settings, Monitor, Minimize2, X, Sparkles,
   ArrowLeft, RotateCw, ExternalLink, Lock,
-  Scaling
+  Scaling, ZoomIn, ZoomOut, ChevronDown, Gauge
 } from "lucide-react";
 import { Video } from "../types";
 import { uploadVideoFile } from "../utils/uploadVideo";
@@ -46,6 +46,7 @@ interface VideoPlayerProps {
   onToggleBookmark: (id: string) => void;
   onImportVideo: (video: Video) => void;
   isModal?: boolean;
+  onVideoEnd?: () => void;
 }
 
 export default function VideoPlayer({ 
@@ -55,13 +56,18 @@ export default function VideoPlayer({
   onToggleLike, 
   onToggleBookmark,
   onImportVideo,
-  isModal = false
+  isModal = false,
+  onVideoEnd
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [isPlaying, setIsPlaying] = useState(false);
+  const [autoplayNext, setAutoplayNext] = useState<boolean>(() => {
+    const saved = localStorage.getItem("vidverse_autoplay_next");
+    return saved !== "false";
+  });
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
@@ -80,9 +86,21 @@ export default function VideoPlayer({
   const [driveVideoStarted, setDriveVideoStarted] = useState(false);
   const [useIframeFallback, setUseIframeFallback] = useState(false);
   const [videoAspectRatio, setVideoAspectRatio] = useState<string>("16/9");
-  const [videoFitMode, setVideoFitMode] = useState<"contain" | "cover" | "fill">("contain");
+  const [videoFitMode, setVideoFitMode] = useState<"contain" | "cover" | "fill">("cover");
   const [showFitControls, setShowFitControls] = useState(false);
   const [useBorderPadding, setUseBorderPadding] = useState(false);
+  const [zoomScale, setZoomScale] = useState<number>(1.0);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      setIsMobileDevice(mobileUserAgent || window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
   
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -121,15 +139,29 @@ export default function VideoPlayer({
     setHasError(false);
     setVideoAspectRatio("16/9");
     setVideoFitMode("contain");
+    setZoomScale(1.0);
     setShowFitControls(false);
 
     const videoNode = videoRef.current;
     if (videoNode) {
       setIsLoading(true);
       videoNode.load();
-      setIsPlaying(false);
       setCurrentTime(0);
       setIsLoading(false);
+
+      // Automatically play the video on click or on transition
+      const playPromise = videoNode.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setIsPlaying(true);
+            videoNode.playbackRate = playbackRate;
+          })
+          .catch((err) => {
+            console.log("Play failed on load (user interaction might be needed):", err);
+            setIsPlaying(false);
+          });
+      }
     }
   }, [video.videoUrl]);
 
@@ -176,6 +208,7 @@ export default function VideoPlayer({
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
+      videoRef.current.playbackRate = playbackRate;
       if (videoRef.current.videoWidth && videoRef.current.videoHeight) {
         setVideoAspectRatio(`${videoRef.current.videoWidth}/${videoRef.current.videoHeight}`);
       }
@@ -399,8 +432,11 @@ export default function VideoPlayer({
     : video.videoUrl;
   const thumbnailSrc = video.thumbnailUrl || (driveId ? `https://drive.google.com/thumbnail?id=${driveId}&sz=w1000` : "");
 
+  const effectiveZoomScale = zoomScale;
+  const effectiveVideoFitMode = videoFitMode;
+
   return (
-    <div className={`flex flex-col ${isModal ? 'bg-transparent border-none shadow-none -mx-0' : 'bg-slate-950 sm:bg-slate-900/60 sm:backdrop-blur-md rounded-none sm:rounded-2xl border-x-0 border-t-0 sm:border border-slate-800/80 shadow-none sm:shadow-2xl -mx-4 sm:mx-0'} overflow-hidden transition-all duration-300`}>
+    <div className={`flex flex-col ${isModal ? 'bg-transparent border-none shadow-none -mx-0 w-full h-full flex-1' : 'bg-slate-950 sm:bg-slate-900/60 sm:backdrop-blur-md rounded-none sm:rounded-2xl border-x-0 border-t-0 sm:border border-slate-800/80 shadow-none sm:shadow-2xl -mx-4 sm:mx-0'} overflow-hidden transition-all duration-300`}>
       
       {/* 2. Hidden manual input */}
       <input 
@@ -414,11 +450,11 @@ export default function VideoPlayer({
       {/* 1. Custom Player Wrapper */}
       <div 
         ref={containerRef}
-        style={!isFullscreen ? { aspectRatio: videoAspectRatio } : undefined}
-        className={`bg-black group overflow-hidden transition-all duration-300 ${
+        style={isModal ? { width: "100%", height: "100%" } : (!isFullscreen ? { aspectRatio: videoAspectRatio, height: "auto" } : undefined)}
+        className={`bg-black group overflow-hidden transition-all duration-300 w-full relative ${isModal ? "h-full flex-1" : "shrink-0"} ${
           isFullscreen 
             ? "fixed inset-0 z-[9999] w-screen h-[100dvh] flex items-center justify-center bg-black" 
-            : "relative w-full shrink-0"
+            : ""
         } ${isDraggingOver ? "ring-4 ring-emerald-500 scale-[0.99] p-1" : ""}`}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => isPlaying && isFullscreen && setShowControls(false)}
@@ -447,7 +483,7 @@ export default function VideoPlayer({
             />
           </div>
         ) : (
-          <div className={`absolute inset-0 w-full h-full flex items-center justify-center bg-slate-950/90 transition-all duration-300 ${useBorderPadding ? "p-3.5 sm:p-6 md:p-8" : ""}`}>
+          <div className={`absolute inset-0 w-full h-full flex items-center justify-center bg-black transition-all duration-300 overflow-hidden ${useBorderPadding ? "p-3.5 sm:p-6 md:p-8" : ""}`}>
             {/* Blurred background of standard HTML5 video if not playing yet */}
             {!isPlaying && thumbnailSrc && (
               <img 
@@ -461,14 +497,15 @@ export default function VideoPlayer({
               ref={videoRef}
               src={nativeVideoSrc}
               poster={thumbnailSrc}
-              className={`w-full h-full max-h-full pointer-events-auto cursor-pointer relative z-10 transition-all duration-300 ${
+              style={{ transform: `scale(${effectiveZoomScale})` }}
+              className={`w-full h-full max-h-full pointer-events-auto cursor-pointer relative z-10 transition-all duration-350 ease-out origin-center ${
                 useBorderPadding 
                   ? "border border-slate-700/80 rounded-xl shadow-2xl shadow-black ring-4 ring-slate-900/60" 
                   : "bg-transparent"
               } ${
-                videoFitMode === "contain" 
+                effectiveVideoFitMode === "contain" 
                   ? "object-contain" 
-                  : videoFitMode === "cover" 
+                  : effectiveVideoFitMode === "cover" 
                   ? "object-cover" 
                   : "object-fill"
               }`}
@@ -477,7 +514,12 @@ export default function VideoPlayer({
               onLoadedMetadata={handleLoadedMetadata}
               onWaiting={() => setIsLoading(true)}
               onPlaying={() => setIsLoading(false)}
-              onEnded={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false);
+                if (autoplayNext && onVideoEnd) {
+                  onVideoEnd();
+                }
+              }}
               onError={() => {
                 if (driveId) {
                   console.warn("Direct stream failed for Google Drive video, falling back to Iframe preview.");
@@ -543,7 +585,7 @@ export default function VideoPlayer({
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="p-3 rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 hover:bg-emerald-450 hover:scale-110 active:scale-95 transition-all duration-200"
+              className="p-3 rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 hover:bg-emerald-400 hover:scale-110 active:scale-95 transition-all duration-200"
             >
               <Play fill="currentColor" className="w-5 h-5 translate-x-0.5" />
             </motion.div>
@@ -553,252 +595,294 @@ export default function VideoPlayer({
         {/* Custom Controller Bar Overlay */}
         {!(driveId && useIframeFallback) && (
           <div 
-            className={`absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/65 to-transparent pt-12 pb-4 px-4 flex flex-col gap-3 transition-opacity duration-300 ${
+            className={`absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/65 to-transparent pt-16 pb-4 flex flex-col gap-4 transition-opacity duration-300 ${
               showControls ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
-          {/* Time Scrubber */}
-          <div className="flex items-center gap-3 group/scrub">
-            <span className="text-xs font-mono text-slate-300 tabular-nums">
-              {formatTime(currentTime)}
-            </span>
-            <input
-              type="range"
-              min={0}
-              max={duration || 100}
-              value={currentTime}
-              onChange={handleSeek}
-              className="flex-1 h-1.5 rounded-lg bg-slate-700/80 cursor-pointer accent-emerald-500 hover:h-2 transition-all duration-150 outline-none"
-            />
-            <span className="text-xs font-mono text-slate-300 tabular-nums">
-              {formatTime(duration)}
-            </span>
-          </div>
-
-          {/* Action Row */}
-          <div className="flex items-center justify-between">
-            {/* Play & Vol controls */}
-            <div className="flex items-center gap-4">
-              <button
-                id="play-btn"
-                onClick={togglePlay}
-                className="p-1.5 text-slate-250 hover:text-white rounded-lg hover:bg-white/10 active:scale-95 transition-all"
-                title={isPlaying ? "Pause" : "Play"}
-              >
-                {isPlaying ? (
-                  <Pause fill="currentColor" className="w-5 h-5" />
-                ) : (
-                  <Play fill="currentColor" className="w-5 h-5" />
-                )}
-              </button>
-
-              <button
-                id="replay-btn"
-                onClick={() => {
-                  if (videoRef.current) {
-                    videoRef.current.currentTime = 0;
-                    if (!isPlaying) togglePlay();
-                  }
+            {/* Time Scrubber */}
+            <div className="w-full relative group/scrub px-0 flex items-center -mb-1">
+              <input
+                type="range"
+                min={0}
+                max={duration || 100}
+                value={currentTime}
+                onChange={handleSeek}
+                className="w-full h-1.5 bg-white/20 cursor-pointer appearance-none outline-none transition-all duration-150 relative z-30"
+                style={{
+                  background: `linear-gradient(to right, #ffffff 0%, #ffffff ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) 100%)`
                 }}
-                className="p-1.5 text-slate-250 hover:text-white rounded-lg hover:bg-white/10 active:scale-90 transition-all"
-                title="Replay"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
+              />
+              <style>{`
+                input[type="range"]::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 4px;
+                  height: 20px;
+                  background: #ffffff;
+                  border-radius: 0px;
+                  cursor: pointer;
+                  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+                }
+                input[type="range"]::-moz-range-thumb {
+                  width: 4px;
+                  height: 20px;
+                  background: #ffffff;
+                  border-radius: 0px;
+                  cursor: pointer;
+                  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+                  border: none;
+                }
+              `}</style>
+            </div>
 
-              {/* Volume */}
-              <div className="flex items-center gap-2 group/vol">
+            {/* Action Row */}
+            <div className="flex items-center justify-between px-4 sm:px-5 w-full">
+              {/* Left group */}
+              <div className="flex items-center gap-3">
+                {/* Play/Pause pill: large white pill with black icon */}
                 <button
-                  id="mute-btn"
-                  onClick={toggleMute}
-                  className="p-1.5 text-slate-250 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
-                  title={isMuted ? "Unmute" : "Mute"}
+                  id="play-btn-pill"
+                  onClick={togglePlay}
+                  className="h-14 w-28 bg-white text-black hover:bg-slate-100 rounded-full flex items-center justify-center shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  title={isPlaying ? "Pause" : "Play"}
                 >
-                  {isMuted ? (
-                    <VolumeX className="w-5 h-5" />
+                  {isPlaying ? (
+                    <Pause className="w-6 h-6 fill-black text-black stroke-[3]" />
                   ) : (
-                    <Volume2 className="w-5 h-5" />
+                    <Play className="w-6 h-6 fill-black text-black translate-x-0.5 stroke-[3]" />
                   )}
                 </button>
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={isMuted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  className="w-0 group-hover/vol:w-20 transition-all duration-300 h-1 rounded-lg bg-slate-705 accent-emerald-500 cursor-pointer overflow-hidden"
-                />
+
+                {/* Duration Badge: dark brown-slate semi-transparent pill */}
+                <div className="h-14 px-6 bg-stone-900/80 backdrop-blur-md rounded-2xl flex items-center justify-center text-white font-semibold text-sm border border-white/5 shadow-2xl tracking-normal">
+                  <span className="font-mono tabular-nums text-slate-100 text-sm">
+                    {formatTime(currentTime)} / {formatTime(duration)}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            {/* Right Side Options */}
-            <div className="flex items-center gap-3">
-              {/* Full Frame Border & Padding Toggle */}
-              <button
-                id="border-padding-toggle"
-                onClick={() => setUseBorderPadding(!useBorderPadding)}
-                className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md border transition-all cursor-pointer ${
-                  useBorderPadding 
-                    ? "text-emerald-400 border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/20" 
-                    : "text-slate-400 border-transparent hover:text-white hover:bg-white/10"
-                }`}
-                title="Toggle Outer frame border & padding"
-              >
-                <Sparkles className={`w-3.5 h-3.5 ${useBorderPadding ? "animate-pulse" : ""}`} />
-                <span className="uppercase text-[10px] tracking-wider hidden sm:inline">Frame Padding</span>
-                <span className="uppercase text-[10px] tracking-wider inline sm:hidden">Frame</span>
-              </button>
+              {/* Right group: Controls badges in a single dark semi-transparent pill */}
+              <div className="h-14 px-6 bg-stone-900/80 backdrop-blur-md rounded-2xl flex items-center gap-5 border border-white/5 shadow-2xl text-slate-300">
+                {/* Volume Button */}
+                <div className="flex items-center gap-2 group/vol relative">
+                  <button
+                    id="mute-btn"
+                    onClick={toggleMute}
+                    className="p-1 hover:text-white transition-colors cursor-pointer"
+                    title={isMuted ? "Unmute" : "Mute"}
+                  >
+                    {isMuted ? (
+                      <VolumeX className="w-5 h-5" />
+                    ) : (
+                      <Volume2 className="w-5 h-5" />
+                    )}
+                  </button>
+                  {/* Floating slide-up volume slider */}
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    value={isMuted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="w-0 group-hover/vol:w-16 transition-all duration-300 h-1 rounded bg-white/20 accent-white cursor-pointer"
+                  />
+                </div>
 
-              {/* Video Zoom Selector */}
-              <div className="relative">
+                {/* CC Button / Indicator */}
                 <button
-                  id="fit-settings"
-                  onClick={() => {
-                    setShowFitControls(!showFitControls);
-                    setShowSpeedControls(false);
-                  }}
-                  className="flex items-center gap-1.5 text-xs text-slate-300 font-semibold hover:text-white px-2.5 py-1 rounded-md hover:bg-white/10 transition-colors cursor-pointer border border-transparent hover:border-slate-800"
-                  title="Video Frame fit"
+                  className="p-1 hover:text-white transition-colors font-mono font-bold text-xs uppercase tracking-wider cursor-pointer border border-white/25 rounded-md px-1.5 py-0.5"
+                  title="Captions / CC"
                 >
-                  <Scaling className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="uppercase text-[10px] tracking-wider">{videoFitMode === 'contain' ? "Zoom Out" : videoFitMode === 'cover' ? "Zoom In" : "Stretch"}</span>
+                  cc
                 </button>
 
-                {showFitControls && (
-                  <div className="absolute bottom-full right-0 mb-2 py-1 bg-slate-950 border border-slate-800 rounded-lg shadow-xl flex flex-col min-w-[140px] text-xs z-50 overflow-hidden">
-                    {[
-                      { mode: "contain", label: "Zoom Out (Original)" },
-                      { mode: "cover", label: "Zoom In (Fill)" },
-                      { mode: "fill", label: "Stretch Frame" }
-                    ].map((item) => (
-                      <button
-                        key={item.mode}
-                        onClick={() => {
-                          setVideoFitMode(item.mode as any);
-                          setShowFitControls(false);
-                        }}
-                        className={`px-3 py-2 text-left hover:bg-slate-800/80 transition-colors flex items-center justify-between cursor-pointer ${
-                          videoFitMode === item.mode ? "text-emerald-400 font-bold bg-slate-900" : "text-slate-300"
-                        }`}
-                      >
-                        <span>{item.label}</span>
-                        {videoFitMode === item.mode && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Playback speed selector */}
-              <div className="relative">
+                {/* Autoplay Toggle Switch */}
                 <button
-                  id="speed-settings"
                   onClick={() => {
-                    setShowSpeedControls(!showSpeedControls);
-                    setShowFitControls(false);
+                    const newValue = !autoplayNext;
+                    setAutoplayNext(newValue);
+                    localStorage.setItem("vidverse_autoplay_next", String(newValue));
                   }}
-                  className="flex items-center gap-1 text-xs text-slate-300 font-medium hover:text-white px-2 py-1 rounded-md hover:bg-white/10 transition-colors"
-                  title="Playback Speed"
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 border border-white/5 bg-white/2 transition-all cursor-pointer select-none"
+                  title={`Auto-Play Next is ${autoplayNext ? "ON" : "OFF"}`}
                 >
-                  <Settings className="w-4 h-4" />
-                  <span>{playbackRate === 1 ? "1.0x" : `${playbackRate}x`}</span>
+                  <span className="text-slate-400">Autoplay</span>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full border border-transparent transition-colors duration-200 ease-in-out ${autoplayNext ? "bg-emerald-500 border-emerald-600" : "bg-zinc-800 border-zinc-700"}`}>
+                    <span className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out ${autoplayNext ? "translate-x-3.5" : "translate-x-0.5"}`} />
+                  </div>
                 </button>
 
-                {showSpeedControls && (
-                  <div className="absolute bottom-full right-0 mb-2 py-1 bg-slate-950 border border-slate-800 rounded-lg shadow-xl flex flex-col min-w-[70px] text-xs z-50 overflow-hidden">
-                    {[0.5, 1, 1.5, 2].map((r) => (
-                      <button
-                        key={r}
-                        onClick={() => {
-                          handleSpeedChange(r);
-                          setShowSpeedControls(false);
-                        }}
-                        className={`px-3 py-1.5 text-left hover:bg-slate-800 transition-colors ${
-                          playbackRate === r ? "text-emerald-400 font-bold bg-slate-900" : "text-slate-300"
-                        }`}
+                {/* Speed indicator & button */}
+                <div className="relative">
+                  <button
+                    id="speed-settings-pill"
+                    onClick={() => {
+                      setShowSpeedControls(!showSpeedControls);
+                      setShowFitControls(false);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white hover:bg-white/5 border border-white/5 bg-white/2 transition-all cursor-pointer select-none"
+                    title="Playback Speed"
+                  >
+                    <Gauge className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Speed: {playbackRate === 1 ? "1.0x" : `${playbackRate}x`}</span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${showSpeedControls ? "rotate-180" : ""}`} />
+                  </button>
+
+                  <AnimatePresence>
+                    {showSpeedControls && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute bottom-full right-1/2 translate-x-1/2 mb-3.5 py-1.5 bg-stone-950 border border-white/10 rounded-xl shadow-2xl flex flex-col min-w-[120px] text-xs z-50 overflow-hidden"
                       >
-                        {r === 1 ? "Normal" : `${r}x`}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+                        <div className="px-3 py-1 text-[10px] uppercase font-semibold text-slate-400 tracking-wider mb-1 border-b border-white/5 pb-1.5">
+                          Speed Control
+                        </div>
+                        {[0.5, 1, 1.5, 2].map((r) => (
+                          <button
+                            key={r}
+                            onClick={() => {
+                              handleSpeedChange(r);
+                              setShowSpeedControls(false);
+                            }}
+                            className={`px-3 py-2 text-left hover:bg-white/10 transition-colors flex items-center justify-between cursor-pointer ${
+                              playbackRate === r ? "text-emerald-400 font-bold bg-white/5" : "text-slate-300"
+                            }`}
+                          >
+                            <span>{r === 1 ? "1.0x (Normal)" : `${r}x`}</span>
+                            {playbackRate === r && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-              {/* Picture in picture */}
-              <button
-                id="pip-btn"
-                onClick={handlePipToggle}
-                className="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-white/10 transition-all"
-                title="Picture-in-Picture"
-              >
-                <Monitor className="w-4.5 h-4.5" />
-              </button>
+                {/* Settings settings button */}
+                <div className="relative">
+                  <button
+                    id="settings-btn-pill"
+                    onClick={() => {
+                      setShowFitControls(!showFitControls);
+                      setShowSpeedControls(false);
+                    }}
+                    className="p-1 hover:text-white transition-colors cursor-pointer"
+                    title="Video Settings"
+                  >
+                    <Settings className={`w-5 h-5 ${showFitControls ? "animate-spin-slow text-emerald-400" : ""}`} />
+                  </button>
 
-              {/* Fullscreen */}
-              <button
-                id="fullscreen-btn"
-                onClick={handleFullscreenToggle}
-                className="p-1.5 text-slate-300 hover:text-white rounded-lg hover:bg-white/10 transition-all"
-                title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-              >
-                {isFullscreen ? (
-                  <Minimize2 className="w-4.5 h-4.5" />
-                ) : (
+                  <AnimatePresence>
+                    {showFitControls && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute bottom-full right-0 mb-3.5 py-1.5 bg-stone-950 border border-white/10 rounded-xl shadow-2xl flex flex-col min-w-[150px] text-xs z-50 overflow-hidden"
+                      >
+                        {[
+                          { mode: "contain", label: "Fit Screen (Contain)" },
+                          { mode: "cover", label: "Fill Screen (Cover)" },
+                          { mode: "fill", label: "Stretch Frame" }
+                        ].map((item) => (
+                          <button
+                            key={item.mode}
+                            onClick={() => {
+                              setVideoFitMode(item.mode as any);
+                              if (item.mode === "contain") {
+                                setZoomScale(1.0);
+                              }
+                              setShowFitControls(false);
+                            }}
+                            className={`px-3 py-2 text-left hover:bg-white/10 transition-colors flex items-center justify-between cursor-pointer ${
+                              videoFitMode === item.mode ? "text-emerald-400 font-semibold bg-white/5" : "text-slate-300"
+                            }`}
+                          >
+                            <span>{item.label}</span>
+                            {videoFitMode === item.mode && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                          </button>
+                        ))}
+                        
+                        {/* Divider */}
+                        <div className="h-px bg-white/10 my-1" />
+
+                        {/* Zoom Scale Selector inside settings */}
+                        <div className="px-3 py-1.5 flex items-center justify-between text-slate-300 gap-2">
+                          <span className="font-sans text-[10px] uppercase tracking-wider text-slate-400 font-bold">Zoom</span>
+                          <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-lg p-0.5">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setZoomScale(prev => Math.max(1.0, parseFloat((prev - 0.1).toFixed(1))));
+                              }}
+                              className="w-5 h-5 flex items-center justify-center rounded bg-white/5 hover:bg-white/15 hover:text-white transition-colors cursor-pointer text-[10px] font-bold"
+                              title="Zoom Out"
+                            >
+                              -
+                            </button>
+                            <span className="font-mono text-[10px] text-emerald-400 font-bold min-w-[24px] text-center">
+                              {zoomScale.toFixed(1)}x
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setZoomScale(prev => {
+                                  const nextZoom = Math.min(3.0, parseFloat((prev + 0.1).toFixed(1)));
+                                  if (videoFitMode === "contain" && nextZoom > 1.0) {
+                                    setVideoFitMode("cover");
+                                  }
+                                  return nextZoom;
+                                });
+                              }}
+                              className="w-5 h-5 flex items-center justify-center rounded bg-white/5 hover:bg-white/15 hover:text-white transition-colors cursor-pointer text-[10px] font-bold"
+                              title="Zoom In"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Zoom Fullscreen Toggle button */}
+                <button
+                  id="fullscreen-btn-pill"
+                  onClick={handleFullscreenToggle}
+                  className="p-1 hover:text-white transition-colors cursor-pointer"
+                  title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+                >
                   <Maximize2 className="w-4.5 h-4.5" />
-                )}
-              </button>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
         )}
       </div>
 
       {/* 2. Metadata details under current player */}
-      <div className={`${isModal ? "px-4 sm:px-0 py-4" : "px-4 py-5 sm:p-6"} flex flex-col gap-4 bg-transparent`}>
-        {/* Author Details under Player */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 font-semibold">
-              by <span className="text-slate-200 font-bold">{video.author}</span>
-            </span>
-          </div>
-        </div>
-
-        {/* Video Title and Interaction Controls */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-          <div className="flex-1">
-            <h1 className="text-xl md:text-2xl font-bold font-sans tracking-tight text-white select-text">
-              {video.title}
-            </h1>
-            <div className="flex gap-4 mt-1.5 text-xs text-slate-400 font-mono transition-all">
-              <span>{video.views.toLocaleString()} views</span>
-              <span>•</span>
-              <span>Uploaded {video.uploadDate}</span>
-            </div>
-          </div>
-
+      {!isModal && (
+        <div className="px-4 py-4 sm:p-5 flex flex-col bg-transparent">
           {/* User Interaction Buttons (Likes, Bookmarks, Copy Share Link) */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 shrink-0">
             {/* Like */}
             <button
               id={`like-btn-${video.id}`}
               onClick={() => onToggleLike(video.id)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl border transition-all duration-200 active:scale-95 ${
-                isLiked 
-                  ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-emerald-400/30 shadow-md shadow-emerald-500/15" 
-                  : "bg-slate-800/40 text-slate-300 border-slate-700/80 hover:bg-slate-850 hover:text-white"
-              }`}
+              className="flex items-center gap-1 px-4 py-2 text-sm rounded-xl font-semibold border transition-all duration-200 active:scale-95 bg-slate-800/40 text-slate-300 border-slate-700/80 hover:bg-slate-850 hover:text-white"
             >
-              <ThumbsUp className={`w-4 h-4 ${isLiked ? "fill-white" : ""}`} />
-              <span>{isLiked ? video.likes + 1 : video.likes}</span>
+              <ThumbsUp className="w-4 h-4" />
+              <span>{video.likes}</span>
             </button>
 
             {/* Bookmark */}
             <button
               id={`bookmark-btn-${video.id}`}
               onClick={() => onToggleBookmark(video.id)}
-              className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl border transition-all duration-200 active:scale-95 ${
+              className={`flex items-center gap-1 px-4 py-2 text-sm rounded-xl font-semibold border transition-all duration-200 active:scale-95 ${
                 isBookmarked 
                   ? "bg-slate-200 text-slate-900 border-white shadow-xs" 
                   : "bg-slate-800/40 text-slate-300 border-slate-700/80 hover:bg-slate-850 hover:text-white"
@@ -814,7 +898,7 @@ export default function VideoPlayer({
               <button
                 id="share-btn"
                 onClick={handleShare}
-                className="p-2.5 bg-slate-800/40 text-slate-300 border border-slate-700/80 rounded-xl hover:bg-slate-850 hover:text-white transition-all duration-200 active:scale-95"
+                className="p-2.5 rounded-xl bg-slate-800/40 text-slate-300 border border-slate-700/80 hover:bg-slate-850 hover:text-white transition-all duration-200 active:scale-95 flex items-center justify-center"
                 title="Copy Share Link"
               >
                 <Share2 className="w-4 h-4" />
@@ -826,7 +910,7 @@ export default function VideoPlayer({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                    className="absolute bottom-full right-0 mb-3 px-3 py-1.5 bg-slate-950 text-emerald-400 text-xs font-semibold rounded-lg border border-slate-800 shadow-xl whitespace-nowrap flex items-center gap-1.5 z-50"
+                    className="absolute bottom-full left-0 mb-3 px-3 py-1.5 bg-slate-950 text-emerald-400 text-xs font-semibold rounded-lg border border-slate-800 shadow-xl whitespace-nowrap flex items-center gap-1.5 z-50"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
                     Link copied to clipboard!
@@ -836,28 +920,7 @@ export default function VideoPlayer({
             </div>
           </div>
         </div>
-
-        {/* Divider */}
-        <div className="h-[1px] bg-slate-800/70" />
-
-          {/* Long Text Description */}
-          <div>
-            <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider mb-2">Description</h3>
-            <p className={`text-sm text-slate-300 leading-relaxed max-w-none text-justify whitespace-pre-line select-text transition-all ${
-              !isExpanded ? "line-clamp-3" : ""
-            }`}>
-              {video.description}
-            </p>
-            {video.description.length > 150 && (
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="mt-2 text-xs font-bold text-emerald-400 hover:text-emerald-350 transition-colors uppercase tracking-wider flex items-center gap-1 cursor-pointer select-none"
-              >
-                <span>{isExpanded ? "Read Less" : "Read More..."}</span>
-              </button>
-            )}
-          </div>
-        </div>
+      )}
     </div>
   );
 }
