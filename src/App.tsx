@@ -236,18 +236,26 @@ export default function App() {
 
     // Schema.org JSON-LD Structured VideoObject Markup (CRITICAL for Google rich elements!)
     let jsonLdScript = document.getElementById("seo-video-ld-json") as HTMLScriptElement;
-    if (isModalOpen) {
+    if (activeVideo) {
+      const isDirectUpload = activeVideo.videoUrl.startsWith("/") && !activeVideo.videoUrl.startsWith("//");
+      const fullContentUrl = isDirectUpload 
+        ? `${window.location.origin}${activeVideo.videoUrl}` 
+        : activeVideo.videoUrl;
+
       const ldData = {
         "@context": "https://schema.org",
         "@type": "VideoObject",
         "name": activeVideo.title,
         "description": activeVideo.description || `Trending ${activeVideo.category} video on VideoVerse.`,
         "thumbnailUrl": [
-          activeVideo.thumbnailUrl || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe"
+          activeVideo.thumbnailUrl || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70"
         ],
-        "uploadDate": activeVideo.uploadDate || "2026-06-01",
+        "uploadDate": activeVideo.uploadDate && activeVideo.uploadDate.match(/^\d{4}-\d{2}-\d{2}$/) 
+          ? activeVideo.uploadDate 
+          : "2026-06-01",
         "duration": `PT${activeVideo.durationSeconds || 120}S`,
         "embedUrl": `${window.location.origin}/?video=${activeVideo.id}`,
+        "contentUrl": fullContentUrl,
         "interactionStatistic": {
           "@type": "InteractionCounter",
           "interactionType": { "@type": "WatchAction" },
@@ -303,7 +311,10 @@ export default function App() {
 
   const handleSelectVideo = (video: Video) => {
     setActiveVideo(video);
-    setIsVideoModalOpen(true);
+    // Smoothly scroll the page directly to the premium showcase player
+    setTimeout(() => {
+      playerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 40);
   };
 
   const handleVideoEnd = () => {
@@ -711,10 +722,118 @@ export default function App() {
               />
             </div>
 
+            {/* Featured Showcase Player Section */}
+            <div className="order-2 w-full flex flex-col gap-4 bg-slate-900/10 border border-slate-900/60 p-4 sm:p-6 rounded-3xl" ref={playerSectionRef}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-900">
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-bold font-display tracking-tight text-white flex items-center gap-2">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span>Cinema Showcase Preview</span>
+                  </h2>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Stream live trending media catalogs inline. Features full speed, zoom, aspect, and mute selectors.</p>
+                </div>
+                <div className="self-start sm:self-center text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg uppercase font-bold tracking-wider">
+                  Category: {activeVideo.category}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Embedded Video player panel */}
+                <div className="lg:col-span-8 w-full">
+                  <VideoPlayer
+                    video={activeVideo}
+                    isLiked={likedVideoIds.includes(activeVideo.id)}
+                    isBookmarked={bookmarkedVideoIds.includes(activeVideo.id)}
+                    onToggleLike={handleToggleLike}
+                    onToggleBookmark={handleToggleBookmark}
+                    onImportVideo={handleImportVideo}
+                    isModal={false}
+                    onVideoEnd={handleVideoEnd}
+                  />
+                </div>
 
+                {/* Right col: Selected video details & Live comment feed */}
+                <div className="lg:col-span-4 bg-slate-950/60 border border-slate-900 rounded-2xl p-5 flex flex-col h-full justify-between gap-5 self-stretch">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between gap-2 border-b border-slate-850 pb-3">
+                      <div className="flex flex-col">
+                        <h3 className="font-bold text-slate-100 text-sm tracking-tight leading-snug">{activeVideo.title}</h3>
+                        <span className="text-[10px] text-emerald-400/90 mt-1 font-mono font-bold tracking-wide">
+                          👤 Posted by {activeVideo.author} • {activeVideo.uploadDate}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-400 leading-relaxed max-h-24 overflow-y-auto pr-1">
+                      {activeVideo.description || "Stream high-speed viral edits free on VideoVerse platform."}
+                    </p>
+                    {/* Tags block */}
+                    {activeVideo.tags && activeVideo.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {activeVideo.tags.map((tag) => (
+                          <span key={tag} className="text-[9px] font-mono bg-slate-900 border border-slate-850 px-2 py-0.5 rounded-md text-emerald-400">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Realtime Live Comments list */}
+                  <div className="flex flex-col gap-3 pt-4 border-t border-slate-900 flex-1 justify-end">
+                    <div className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-extrabold flex justify-between">
+                      <span>Comments thread</span>
+                      <span className="text-emerald-400">({(commentsMap[activeVideo.id] || []).length})</span>
+                    </div>
+
+                    <div className="flex flex-col gap-2 max-h-36 overflow-y-auto pr-1">
+                      {(!commentsMap[activeVideo.id] || commentsMap[activeVideo.id].length === 0) ? (
+                        <span className="text-[10px] text-slate-500 italic py-2">No comments published yet. Add a first review!</span>
+                      ) : (
+                        commentsMap[activeVideo.id].slice(0, 3).map((comment) => (
+                          <div key={comment.id} className="text-[10px] bg-slate-900/50 p-2 rounded-xl border border-slate-900 flex flex-col gap-1">
+                            <div className="flex items-center justify-between gap-1 font-semibold">
+                              <span className="text-emerald-400">{comment.author}</span>
+                              <span className="text-slate-500 text-[8px]">{comment.timestamp}</span>
+                            </div>
+                            <p className="text-slate-350 font-sans leading-relaxed text-[10px]">{comment.text}</p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Quick guest comment box */}
+                    <form 
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const form = e.currentTarget;
+                        const input = form.elements.namedItem("comment-text") as HTMLInputElement;
+                        if (input.value.trim()) {
+                          handleAddComment(activeVideo.id, input.value.trim(), "Guest Critic");
+                          input.value = "";
+                        }
+                      }}
+                      className="flex gap-1.5 mt-1"
+                    >
+                      <input 
+                        name="comment-text"
+                        placeholder="Join conversation..."
+                        required
+                        className="flex-1 bg-slate-900 hover:bg-slate-850 border border-slate-800 text-[10px] rounded-xl px-3 py-1.5 focus:outline-none focus:border-emerald-500 text-slate-200 transition-colors placeholder:text-slate-500"
+                      />
+                      <button type="submit" className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-[9px] uppercase tracking-wider rounded-xl transition-all cursor-pointer">
+                        Post
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Major Stacked Layout */}
-            <div className="flex flex-col gap-10 order-2 lg:order-3 w-full animate-fadeIn" ref={playerSectionRef}>
+            <div className="flex flex-col gap-10 order-3 w-full animate-fadeIn">
               
               {/* Bottom Section: Full Width Stream Listing (exactly 3 cards per row) */}
               <div className="w-full flex flex-col gap-6 font-sans">
