@@ -159,6 +159,115 @@ export default function App() {
     localStorage.setItem("vpxx_comments", JSON.stringify(commentsMap));
   }, [commentsMap]);
 
+  // Dynamic SEO Synchronization Engine (Increases Search Relevance & Social Discovery)
+  useEffect(() => {
+    const isModalOpen = isVideoModalOpen && activeVideo;
+    
+    // Retrieve custom keywords/title/description from SEO Suite or fallback
+    const savedTitle = localStorage.getItem("videoverse_seo_title") || "VideoVerse - Trending Videos Updated Daily";
+    const savedDesc = localStorage.getItem("videoverse_seo_description") || "VideoVerse is a video discovery platform featuring trending, viral, and popular videos updated daily.";
+    let savedKeywords: string[] = [];
+    try {
+      const stored = localStorage.getItem("videoverse_seo_keywords");
+      savedKeywords = stored ? JSON.parse(stored) : [
+        "videoverse", "vlxx", "xnxx", "pornhub", "xvideo", "sex video", "xhumster", "xhamster", "video discovery", "trending videos"
+      ];
+    } catch {
+      savedKeywords = ["videoverse", "vlxx", "xnxx", "pornhub", "xvideo", "sex video", "xhumster", "xhamster"];
+    }
+
+    let targetTitle = savedTitle;
+    let targetDescription = savedDesc;
+    let targetKeywords = [...savedKeywords];
+    let targetImage = "/assets/og-image.jpg"; // fallback
+
+    if (isModalOpen) {
+      // Title optimized for CTR
+      targetTitle = `Watch ${activeVideo.title} on VideoVerse - Trending Updates`;
+      
+      // Clear optimized description
+      targetDescription = activeVideo.description 
+        ? `${activeVideo.description.slice(0, 140)}... Stream high speed trending videos free on VideoVerse.`
+        : `Watch trending "${activeVideo.title}" in ${activeVideo.category} category. Duration: ${activeVideo.duration} on VideoVerse.`;
+      
+      // Keywords mixing global and specific video tags
+      const videoKeywords = [
+        activeVideo.title.toLowerCase(),
+        activeVideo.category.toLowerCase(),
+        ...(activeVideo.tags || [])
+      ];
+      targetKeywords = Array.from(new Set([...videoKeywords, ...savedKeywords])).slice(0, 20);
+      
+      // Use actual video thumbnail as public search/message preview card
+      if (activeVideo.thumbnailUrl) {
+        targetImage = activeVideo.thumbnailUrl;
+      }
+    }
+
+    // Apply Meta tags to DOM
+    document.title = targetTitle;
+
+    const updateMeta = (name: string, content: string, isProperty = false) => {
+      const attribute = isProperty ? "property" : "name";
+      let element = document.querySelector(`meta[${attribute}="${name}"]`);
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(attribute, name);
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+    };
+
+    updateMeta("description", targetDescription);
+    updateMeta("keywords", targetKeywords.join(", "));
+    updateMeta("author", activeVideo?.author || "VideoVerse Streaming");
+
+    // Open Graph (OG) tags for high-CTR sharing previews
+    updateMeta("og:title", targetTitle, true);
+    updateMeta("og:description", targetDescription, true);
+    updateMeta("og:image", targetImage, true);
+    updateMeta("og:type", isModalOpen ? "video.movie" : "website", true);
+    updateMeta("og:url", window.location.href, true);
+
+    // Twitter card
+    updateMeta("twitter:title", targetTitle);
+    updateMeta("twitter:description", targetDescription);
+    updateMeta("twitter:image", targetImage);
+
+    // Schema.org JSON-LD Structured VideoObject Markup (CRITICAL for Google rich elements!)
+    let jsonLdScript = document.getElementById("seo-video-ld-json") as HTMLScriptElement;
+    if (isModalOpen) {
+      const ldData = {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": activeVideo.title,
+        "description": activeVideo.description || `Trending ${activeVideo.category} video on VideoVerse.`,
+        "thumbnailUrl": [
+          activeVideo.thumbnailUrl || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe"
+        ],
+        "uploadDate": activeVideo.uploadDate || "2026-06-01",
+        "duration": `PT${activeVideo.durationSeconds || 120}S`,
+        "embedUrl": `${window.location.origin}/?video=${activeVideo.id}`,
+        "interactionStatistic": {
+          "@type": "InteractionCounter",
+          "interactionType": { "@type": "WatchAction" },
+          "userInteractionCount": activeVideo.views || 4220
+        }
+      };
+
+      if (!jsonLdScript) {
+        jsonLdScript = document.createElement("script");
+        jsonLdScript.id = "seo-video-ld-json";
+        jsonLdScript.type = "application/ld+json";
+        document.head.appendChild(jsonLdScript);
+      }
+      jsonLdScript.textContent = JSON.stringify(ldData, null, 2);
+    } else if (jsonLdScript) {
+      jsonLdScript.remove();
+    }
+
+  }, [activeVideo, isVideoModalOpen]);
+
   // Handle Likes
   const handleToggleLike = (id: string) => {
     setLikedVideoIds(prev => 
@@ -501,7 +610,7 @@ export default function App() {
             </div>
             
             {/* Dynamic SEO Optimization Dashboard */}
-            <SEODashboard />
+            <SEODashboard videos={videos} />
           </motion.main>
         ) : isAboutView ? (
           /* ================== ABOUT ROUTE VIEW PAGE ================== */

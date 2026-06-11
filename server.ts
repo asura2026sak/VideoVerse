@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import https from "https";
 import multer from "multer";
+import compression from "compression";
 import { createServer as createViteServer } from "vite";
 import { INITIAL_VIDEOS } from "./src/data/videos";
 
@@ -204,6 +205,9 @@ function syncPhysicalUploadsWithDatabase() {
 // Initial sync on server boot
 syncPhysicalUploadsWithDatabase();
 
+// Enable Gzip compression for high-performance payload delivery
+app.use(compression());
+
 app.use(express.json());
 
 // API Cache-Control Middleware to guarantee dynamic edits in videos-db.json show up on client refresh
@@ -218,8 +222,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve uploaded assets statically
-app.use("/uploads", express.static(uploadsDir));
+// Serve uploaded assets statically with solid 30-day performance cache lifetimes
+app.use("/uploads", express.static(uploadsDir, {
+  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days in ms
+  immutable: true
+}));
 
 // Multer Storage Configuration
 const storage = multer.diskStorage({
@@ -483,7 +490,20 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    const oneYearMs = 365 * 24 * 60 * 60 * 1000;
+    app.use(express.static(distPath, {
+      maxAge: oneYearMs,
+      immutable: true,
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+          // Keep index.html fresh at all times for immediate dynamic content rollout
+          res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        } else {
+          // JS, CSS, and fonts can be cached forever by the browser safely
+          res.setHeader('Cache-Control', `public, max-age=${oneYearMs / 1000}, immutable`);
+        }
+      }
+    }));
     app.get('*', (req, res) => {
       res.sendFile(path.join(distPath, 'index.html'));
     });

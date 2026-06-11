@@ -359,7 +359,7 @@ export default function VideoPlayer({
             views: 1,
             uploadDate: "Just imported",
             videoUrl: finalUrl,
-            thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+            thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70",
             author: "Local Reader",
             likes: 0,
             comments: []
@@ -410,7 +410,7 @@ export default function VideoPlayer({
           views: 1,
           uploadDate: "Just imported",
           videoUrl: finalUrl,
-          thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+          thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70",
           author: "Local Reader",
           likes: 0,
           comments: []

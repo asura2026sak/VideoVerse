@@ -70,24 +70,28 @@ export default function Watchlist({
               >
                 {video.thumbnailUrl ? (
                   <img 
-                    src={video.thumbnailUrl} 
+                    src={video.thumbnailUrl.replace("w=600&q=80", "w=400&q=70")} 
                     alt={video.title} 
                     referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                       const driveId = parseGoogleDriveUrl(video.videoUrl);
                       if (driveId) {
-                        (e.target as HTMLImageElement).src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w600`;
+                        (e.target as HTMLImageElement).src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w360`;
                       } else {
-                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80";
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70";
                       }
                     }}
                   />
                 ) : parseGoogleDriveUrl(video.videoUrl) ? (
                   <img 
-                    src={`https://drive.google.com/thumbnail?id=${parseGoogleDriveUrl(video.videoUrl)}&sz=w600`} 
+                    src={`https://drive.google.com/thumbnail?id=${parseGoogleDriveUrl(video.videoUrl)}&sz=w360`} 
                     alt={video.title} 
                     referrerPolicy="no-referrer"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                       const driveId = parseGoogleDriveUrl(video.videoUrl);

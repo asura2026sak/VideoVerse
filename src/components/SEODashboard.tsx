@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { 
   Globe, Search, Share2, Plus, X, Sparkles, CheckCircle2, 
-  HelpCircle, Sliders, Settings2, FileText, LayoutList
+  HelpCircle, Sliders, Settings2, FileText, LayoutList,
+  Download, Copy, ChevronDown, ChevronUp, Check, AlertCircle, RefreshCw
 } from "lucide-react";
+import { Video } from "../types";
 
-export default function SEODashboard() {
+interface SEODashboardProps {
+  videos?: Video[];
+}
+
+export default function SEODashboard({ videos = [] }: SEODashboardProps) {
   // Sync state with local storage or standard defaults
   const [metaTitle, setMetaTitle] = useState(() => {
     return localStorage.getItem("videoverse_seo_title") || "VideoVerse - Trending Videos Updated Daily";
@@ -28,6 +34,12 @@ export default function SEODashboard() {
 
   const [newKeyword, setNewKeyword] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  
+  // Interactive UI toggles
+  const [showSitemap, setShowSitemap] = useState(false);
+  const [showSEOManual, setShowSEOManual] = useState(true);
+  const [showSchemaPreview, setShowSchemaPreview] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
 
   // Presets available to click and immediately add
   const SEO_PRESETS = [
@@ -38,7 +50,8 @@ export default function SEODashboard() {
   // Update real DOM meta elements dynamically on changes
   useEffect(() => {
     localStorage.setItem("videoverse_seo_title", metaTitle);
-    document.title = metaTitle;
+    const titleElem = document.querySelector("title");
+    if (titleElem) titleElem.innerText = metaTitle;
   }, [metaTitle]);
 
   useEffect(() => {
@@ -94,6 +107,90 @@ export default function SEODashboard() {
   const isTitleIdeal = metaTitle.length >= 30 && metaTitle.length <= 60;
   const isDescIdeal = metaDescription.length >= 120 && metaDescription.length <= 160;
 
+  // XML Sitemap Generator
+  const generateSitemapXml = () => {
+    const baseUrl = window.location.origin || "https://videoverse-streaming.org";
+    const dateStr = new Date().toISOString().split("T")[0];
+    
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n`;
+    xml += `        xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">\n`;
+    
+    // Main homepage
+    xml += `  <url>\n`;
+    xml += `    <loc>${baseUrl}/</loc>\n`;
+    xml += `    <lastmod>${dateStr}</lastmod>\n`;
+    xml += `    <changefreq>daily</changefreq>\n`;
+    xml += `    <priority>1.0</priority>\n`;
+    xml += `  </url>\n`;
+
+    // Dynamic Pages for each Video index item
+    videos.forEach(v => {
+      const videoCleanTitle = encodeURIComponent(v.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"));
+      const videoLoc = `${baseUrl}/?video=${v.id}`;
+      const uploadDateClean = v.uploadDate || dateStr;
+      
+      xml += `  <url>\n`;
+      xml += `    <loc>${videoLoc}</loc>\n`;
+      xml += `    <lastmod>${uploadDateClean}</lastmod>\n`;
+      xml += `    <changefreq>weekly</changefreq>\n`;
+      xml += `    <priority>0.8</priority>\n`;
+      
+      // Google Video Sitemap extension markup! Highly prized by search bots
+      xml += `    <video:video>\n`;
+      xml += `      <video:thumbnail_loc>${v.thumbnailUrl || "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe"}</video:thumbnail_loc>\n`;
+      xml += `      <video:title><![CDATA[${v.title}]]></video:title>\n`;
+      xml += `      <video:description><![CDATA[${v.description || "Watch viral trending video content"}]]></video:description>\n`;
+      xml += `      <video:publication_date>${uploadDateClean}T00:00:00+00:00</video:publication_date>\n`;
+      xml += `      <video:duration>${v.durationSeconds || 120}</video:duration>\n`;
+      xml += `      <video:family_friendly>no</video:family_friendly>\n`;
+      xml += `    </video:video>\n`;
+      xml += `  </url>\n`;
+    });
+
+    xml += `</urlset>`;
+    return xml;
+  };
+
+  const handleCopySitemap = () => {
+    const xml = generateSitemapXml();
+    navigator.clipboard.writeText(xml);
+    setIsCopied(true);
+    triggerNotification("Copied Sitemap to Clipboard!");
+    setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handleDownloadSitemap = () => {
+    const xml = generateSitemapXml();
+    const blob = new Blob([xml], { type: "application/xml" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "sitemap.xml";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    triggerNotification("sitemap.xml download started!");
+  };
+
+  // Mock Active Schema preview markup
+  const activeSchemaJson = videos.length > 0 ? JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": videos[0].title,
+    "description": videos[0].description,
+    "thumbnailUrl": [videos[0].thumbnailUrl],
+    "uploadDate": videos[0].uploadDate || "2026-06-01",
+    "duration": `PT${videos[0].durationSeconds || 180}S`,
+    "embedUrl": `${window.location.origin}/?video=${videos[0].id}`,
+    "interactionStatistic": {
+      "@type": "InteractionCounter",
+      "interactionType": { "@type": "WatchAction" },
+      "userInteractionCount": videos[0].views || 3421
+    }
+  }, null, 2) : "/* No videos uploaded to seed Schema object */";
+
   return (
     <div className="bg-slate-900/40 p-5 md:p-6 rounded-2xl border border-slate-850 flex flex-col gap-6">
       
@@ -108,7 +205,7 @@ export default function SEODashboard() {
               <span>Real-Time Search Engine Optimization (SEO) Suite</span>
             </h4>
             <p className="text-[10.5px] text-slate-500 mt-0.5">
-              Live injection system syncing site index properties.
+              Live injection system syncing site index properties & sitemaps.
             </p>
           </div>
         </div>
@@ -251,6 +348,84 @@ export default function SEODashboard() {
 
           </div>
 
+          {/* DYNAMIC XML SITEMAP section */}
+          <div className="p-4 bg-slate-950/65 rounded-xl border border-slate-850/60 flex flex-col gap-3">
+            <div 
+              onClick={() => setShowSitemap(!showSitemap)}
+              className="flex justify-between items-center cursor-pointer select-none"
+            >
+              <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Dynamic Robots XML Sitemap Builder</span>
+                <span className="bg-emerald-500/15 text-emerald-450 border border-emerald-500/20 text-[9px] font-mono px-2 py-0.5 rounded-full uppercase">
+                  Google compatible
+                </span>
+              </h5>
+              {showSitemap ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+            </div>
+
+            {showSitemap && (
+              <div className="flex flex-col gap-3 animate-fadeIn mt-1 pt-2 border-t border-slate-900">
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  Search engine bots index your platform much faster when you submit a structured <code className="bg-slate-900 text-emerald-400 px-1 py-0.5 rounded">sitemap.xml</code> mapping all videos. Our engine automatically nests active play URLs and thumbnail assets.
+                </p>
+                <div className="bg-slate-950 p-3 rounded-lg border border-slate-900 relative max-h-[180px] overflow-y-auto no-scrollbar">
+                  <pre className="font-mono text-[9.5px] text-slate-400 text-left whitespace-pre-wrap">
+                    {generateSitemapXml()}
+                  </pre>
+                </div>
+                <div className="flex justify-end gap-2 text-xs">
+                  <button
+                    type="button"
+                    onClick={handleCopySitemap}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 font-bold transition-all cursor-pointer"
+                  >
+                    {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{isCopied ? "Copied!" : "Copy XML Schema"}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDownloadSitemap}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition-all cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Download sitemap.xml</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* DYNAMIC SCHEMA.ORG PREVIEW */}
+          <div className="p-4 bg-slate-950/65 rounded-xl border border-slate-850/60 flex flex-col gap-3">
+            <div 
+              onClick={() => setShowSchemaPreview(!showSchemaPreview)}
+              className="flex justify-between items-center cursor-pointer select-none"
+            >
+              <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>Rich Snippets: Schema JSON-LD Checker</span>
+                <span className="bg-sky-500/10 text-sky-400 border border-sky-500/15 text-[9px] font-mono px-2 py-0.5 rounded-full uppercase">
+                  Active in Background
+                </span>
+              </h5>
+              {showSchemaPreview ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+            </div>
+
+            {showSchemaPreview && (
+              <div className="flex flex-col gap-2 animate-fadeIn mt-1 pt-2 border-t border-slate-900">
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  We dynamically inject **Schema.org VideoObject** JSON-LD blocks on video selection. This lets Google render rich thumbnail badges on search results. Check out the current raw active segment:
+                </p>
+                <div className="bg-slate-950 p-3 rounded-lg border border-slate-900 max-h-[150px] overflow-y-auto no-scrollbar">
+                  <pre className="font-mono text-[9px] text-amber-400/80 text-left whitespace-pre-wrap">
+                    {activeSchemaJson}
+                  </pre>
+                </div>
+              </div>
+            )}
+          </div>
+
         </div>
 
         {/* Right column: Previews and Diagnostics */}
@@ -265,8 +440,8 @@ export default function SEODashboard() {
 
             <div className="bg-white text-slate-900 p-4 rounded-lg font-sans border border-slate-200 shadow-sm text-left">
               <div className="flex items-center gap-1 text-xs text-slate-600 truncate pb-0.5 font-sans">
-                <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[9px] font-medium text-slate-500 tracking-wide uppercase shrink-0">videoverse.com</span>
-                <span className="text-[10px]">https://videoverse-streaming.node {"›"} platform</span>
+                <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[9px] font-medium text-slate-500 tracking-wide uppercase shrink-0">videoverse.org</span>
+                <span className="text-[10px]">{window.location.origin || "https://videoverse-streaming.org"} {"›"} watch</span>
               </div>
               <h5 className="text-[14px] md:text-[15.5px] font-sans font-medium text-[#1a5bba] hover:underline cursor-pointer leading-tight pt-1">
                 {metaTitle}
@@ -279,41 +454,79 @@ export default function SEODashboard() {
               </p>
             </div>
             <p className="text-[9px] text-slate-500 leading-normal">
-              Based on Google guidelines, key search phrases like <strong className="text-emerald-450">{keywords.slice(0, 4).join(", ")}</strong> matched inside title headers improve search relevance ranking vectors.
+              Based on search guidelines, key phrases like <strong className="text-emerald-450">{keywords.slice(0, 4).join(", ")}</strong> matched inside title tags improve organic CTR index results.
             </p>
           </div>
 
-          {/* Social Cards mock Preview */}
-          <div className="p-4 bg-slate-950/70 border border-slate-850 rounded-xl flex flex-col gap-2.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450 flex items-center gap-1">
-              <Share2 className="w-3 h-3 text-pink-400" />
-              <span>Social Media Preview (Telegram / Twitter Card)</span>
-            </span>
-
-            <div className="bg-[#1b2735] text-slate-100 rounded-lg p-3 font-sans border border-[#2a3a4e] flex gap-2.5 overflow-hidden items-start text-left">
-              {/* Vertical side Accent bar popular in Messenger apps */}
-              <div className="w-1 h-14 bg-emerald-500 rounded-sm shrink-0" />
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">VIDEOVERSE PLATFORM</span>
-                <h6 className="text-[12px] font-bold text-slate-150 leading-snug">{metaTitle}</h6>
-                <p className="text-[10.5px] text-slate-350 line-clamp-2 leading-snug">
-                  {metaDescription}
-                </p>
+          {/* Handbook - Why site SEO decreases and how to make it shoot up */}
+          <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-xl flex flex-col gap-2.5">
+            <div 
+              onClick={() => setShowSEOManual(!showSEOManual)}
+              className="flex justify-between items-center cursor-pointer select-none"
+            >
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <Settings2 className="w-3.5 h-3.5 text-amber-400" />
+                <span>Search Ranking Optimizer handbook</span>
               </div>
+              {showSEOManual ? <ChevronUp className="w-3.5 h-3.5 text-slate-450" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-450" />}
             </div>
+
+            {showSEOManual && (
+              <div className="space-y-3.5 text-[11px] text-slate-300 leading-relaxed border-t border-slate-900 pt-2.5 animate-fadeIn">
+                <div className="p-2.5 rounded-lg bg-emerald-500/5 border border-emerald-500/10 space-y-2">
+                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                    <RefreshCw className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>Dynamic Video SEO Applied!</span>
+                  </span>
+                  <p className="text-slate-450 text-[10px]">
+                    We just implemented automatic SEO swapping! Now, whenever you or a reader opens a specific video, the page metadata (Title, Description, Keywords, and Open Graph Thumbnails) updates instantly. Search engine spiders and messaging bots index the video's details instead of just a generic homepage.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <h6 className="font-bold text-amber-400 flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0 text-amber-405" />
+                    <span>Why did my search traffic drop?</span>
+                  </h6>
+                  <ul className="list-disc list-inside space-y-1.5 text-slate-400 text-[10px]">
+                    <li>
+                      <strong className="text-slate-350">Missing Sitemap.xml:</strong> Spiders search blind without it. Expand the Sitemap panel above, click **Download sitemap.xml**, and upload it!
+                    </li>
+                    <li>
+                      <strong className="text-slate-350">Intrusive Ads Penalty:</strong> Ads network scripts (like Popunders) are great, but dense popups can trigger Google SafeSearch/Page Experience filters. High bounce rates tell search algorithms the page lacks value. Keep ads balanced.
+                    </li>
+                    <li>
+                      <strong className="text-slate-350">Stagnant Page Metadata:</strong> React Single Page Apps naturally serve only one document. Our dynamic metadata injector fixes this by rewriting head properties at run-time.
+                    </li>
+                    <li>
+                      <strong className="text-slate-355">Slow Initial Paint (CLS):</strong> Unstructured elements cause layout shifts. Maintain proper video player containers to preserve search rankings.
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="space-y-1.5">
+                  <h6 className="font-extrabold text-slate-200">Action items to triple SEO search traffic:</h6>
+                  <ol className="list-decimal list-inside space-y-1 text-slate-400 text-[10px]">
+                    <li>Go to <strong className="text-slate-300">Google Search Console</strong> and verify ownership using the HTML Meta Tag method (add your token to index.html).</li>
+                    <li>Submit your exported <strong className="text-slate-300">sitemap.xml</strong> under Indexing {"›"} Sitemaps.</li>
+                    <li>Keep adding customized categories and niche tags to videos to capture regional traffic.</li>
+                  </ol>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Active Diagnostic Checklist */}
-          <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-xl flex flex-col gap-2.5">
+          <div className="p-4 bg-slate-950/45 border border-slate-850 rounded-xl flex flex-col gap-2.5">
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
               <span>Real-Time Index Readiness</span>
             </div>
 
             <div className="space-y-2 text-[10.5px]">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="text-slate-300">
+                <span className="text-slate-350 flex-1">
                   Keywords injected in HTML head tag.
                 </span>
               </div>
@@ -323,7 +536,7 @@ export default function SEODashboard() {
                 ) : (
                   <div className="w-3.5 h-3.5 rounded-full border border-amber-500/50 bg-amber-500/10 shrink-0" />
                 )}
-                <span className={isTitleIdeal ? "text-slate-350" : "text-amber-400 font-medium"}>
+                <span className={isTitleIdeal ? "text-slate-350 flex-1" : "text-amber-400 font-medium flex-1"}>
                   Title is {metaTitle.length} chars (30 to 60 is recommended).
                 </span>
               </div>
@@ -333,8 +546,20 @@ export default function SEODashboard() {
                 ) : (
                   <div className="w-3.5 h-3.5 rounded-full border border-amber-500/50 bg-amber-500/10 shrink-0" />
                 )}
-                <span className={isDescIdeal ? "text-slate-350" : "text-amber-400 font-medium"}>
+                <span className={isDescIdeal ? "text-slate-350 flex-1" : "text-amber-400 font-medium flex-1"}>
                   Description is {metaDescription.length} chars (120 to 160 recommended).
+                </span>
+              </div>
+              <div className="flex items-center gap-2 border-t border-slate-900 pt-1.5 mt-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="text-emerald-400/90 font-medium flex-1">
+                  Dynamic Video swapping metadata tag support active!
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <span className="text-emerald-405/90 font-medium flex-1">
+                  Google JSON-LD VideoObject rich snippet active!
                 </span>
               </div>
             </div>

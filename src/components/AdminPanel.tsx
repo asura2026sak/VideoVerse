@@ -148,11 +148,11 @@ export default function AdminPanel({
       setUploadProgress(85);
 
       const fallbackThumbnails: Record<string, string> = {
-        Animation: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
-        "Sci-Fi": "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?auto=format&fit=crop&w=600&q=80",
-        Landscape: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",
-        Cinematic: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
-        Action: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=600&q=80",
+        Animation: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=70",
+        "Sci-Fi": "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?auto=format&fit=crop&w=400&q=70",
+        Landscape: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=400&q=70",
+        Cinematic: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70",
+        Action: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=400&q=70",
       };
 
       const selectedThumb = fallbackThumbnails[category] || fallbackThumbnails["Cinematic"];
@@ -229,11 +229,11 @@ export default function AdminPanel({
       setUploadProgress(70);
       
       const fallbackThumbnails: Record<string, string> = {
-        Animation: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80",
-        "Sci-Fi": "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?auto=format&fit=crop&w=600&q=80",
-        Landscape: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=600&q=80",
-        Cinematic: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
-        Action: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=600&q=80",
+        Animation: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=70",
+        "Sci-Fi": "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?auto=format&fit=crop&w=400&q=70",
+        Landscape: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=400&q=70",
+        Cinematic: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70",
+        Action: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=400&q=70",
       };
 
       const selectedThumb = fallbackThumbnails[category] || fallbackThumbnails["Cinematic"];
@@ -324,7 +324,7 @@ export default function AdminPanel({
       views: 125,
       uploadDate: "Existing Stored File",
       videoUrl: fileObj.url,
-      thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+      thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70",
       author: "Server Folder Stream",
       likes: 12,
       comments: []
@@ -351,7 +351,7 @@ export default function AdminPanel({
       views: 1,
       uploadDate: "Scanned & Appended",
       videoUrl: fileObj.url,
-      thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80",
+      thumbnailUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=70",
       author: "Discovered Media",
       likes: 0,
       comments: []
@@ -702,16 +702,18 @@ export default function AdminPanel({
                       <div className="w-8 aspect-video rounded overflow-hidden shrink-0 bg-slate-950">
                         {video.thumbnailUrl ? (
                           <img 
-                            src={video.thumbnailUrl} 
+                            src={video.thumbnailUrl.replace("w=600&q=80", "w=120&q=60")} 
                             alt="" 
                             referrerPolicy="no-referrer"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover" 
                             onError={(e) => {
                               const driveId = parseGoogleDriveUrl(video.videoUrl);
                               if (driveId) {
                                 (e.target as HTMLImageElement).src = `https://drive.google.com/thumbnail?id=${driveId}&sz=w200`;
                               } else {
-                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80";
+                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=120&q=60";
                               }
                             }}
                           />
@@ -720,6 +722,8 @@ export default function AdminPanel({
                             src={`https://drive.google.com/thumbnail?id=${parseGoogleDriveUrl(video.videoUrl)}&sz=w200`} 
                             alt="" 
                             referrerPolicy="no-referrer"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               const driveId = parseGoogleDriveUrl(video.videoUrl);
