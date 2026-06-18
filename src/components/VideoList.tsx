@@ -36,6 +36,7 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"newest" | "most-viewed" | "alphabetical">("most-viewed");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [hoveredVideoId, setHoveredVideoId] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on click outside
@@ -253,12 +254,67 @@ export default function VideoList({ videos, activeVideoId, onSelectVideo }: Vide
                   <div
                     key={video.id}
                     onClick={() => onSelectVideo(video)}
-                    className={`group cursor-pointer rounded-xl overflow-hidden border p-2.5 sm:p-3.5 flex flex-col gap-2 sm:gap-3 transition-all duration-300 transform hover:scale-[1.015] hover:-translate-y-0.5 ${
+                    onMouseEnter={() => setHoveredVideoId(video.id)}
+                    onMouseLeave={() => setHoveredVideoId(null)}
+                    className={`group cursor-pointer rounded-xl border p-2.5 sm:p-3.5 flex flex-col gap-2 sm:gap-3 transition-all duration-300 transform hover:scale-[1.015] hover:-translate-y-0.5 relative ${
                       isActive 
-                        ? "bg-slate-800/60 border-emerald-500/80 shadow-md shadow-emerald-500/5 relative" 
+                        ? "bg-slate-800/60 border-emerald-500/80 shadow-md shadow-emerald-500/5" 
                         : "bg-slate-900/30 border-slate-800/70 hover:bg-slate-800/30 hover:border-slate-700/80"
                     }`}
                   >
+                    {/* Subtle Hover Tooltip */}
+                    <AnimatePresence>
+                      {hoveredVideoId === video.id && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 12, scale: 0.95, x: "-50%" }}
+                          animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+                          exit={{ opacity: 0, y: 8, scale: 0.95, x: "-50%" }}
+                          transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                          className="absolute bottom-[calc(100%+12px)] left-1/2 w-48 bg-slate-950/95 backdrop-blur-md border border-emerald-500/35 rounded-xl p-3 shadow-2xl z-40 pointer-events-none flex flex-col gap-1.5 text-left font-sans text-xs select-none"
+                        >
+                          {/* Decorative down triangle arrow */}
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-950" />
+                          
+                          <div className="flex items-center gap-1.5 pb-1.5 border-b border-slate-900 justify-between">
+                            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest font-mono">Video Profile</span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse animate-duration-1000" />
+                          </div>
+
+                          <div className="flex flex-col gap-1.5 text-[11px]">
+                            {/* Precise Duration */}
+                            <div className="flex items-center justify-between text-slate-400">
+                              <span className="flex items-center gap-1 text-[10.5px]">
+                                <Clock className="w-3.5 h-3.5 text-emerald-400/90 shrink-0" />
+                                <span>Duration</span>
+                              </span>
+                              <span className="font-mono font-bold text-slate-200">
+                                {video.duration || "N/A"}
+                              </span>
+                            </div>
+
+                            {/* Exact Views Count */}
+                            <div className="flex items-center justify-between text-slate-400">
+                              <span className="flex items-center gap-1 text-[10.5px]">
+                                <Eye className="w-3.5 h-3.5 text-emerald-400/90 shrink-0" />
+                                <span>Total Views</span>
+                              </span>
+                              <span className="font-mono font-bold text-slate-200">
+                                {video.views.toLocaleString()}
+                              </span>
+                            </div>
+
+                            {/* Category Tag */}
+                            <div className="flex items-center justify-between text-slate-400 mt-0.5 pt-1.5 border-t border-slate-900/80 text-[10px] uppercase font-mono tracking-wider">
+                              <span className="text-slate-500">Group</span>
+                              <span className="text-emerald-450 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/10 shrink-0">
+                                {video.category}
+                              </span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
                     {/* Thumbnail Column */}
                     <div className="relative aspect-video w-full shrink-0 rounded-lg overflow-hidden bg-slate-950">
                       {video.thumbnailUrl ? (
