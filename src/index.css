@@ -6,24 +6,24 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* Custom Scrollbar styled elegantly for dark futuristic UI */
+/* Custom Scrollbar styled for the dark tube theme */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #060910;
+  background: #0f0f0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #3a3a3a;
   border-radius: 9999px;
-  border: 2px solid #060910;
+  border: 2px solid #0f0f0f;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: #ff0000;
 }
 
 /* Hide scrollbars for sliders but retain functionality */

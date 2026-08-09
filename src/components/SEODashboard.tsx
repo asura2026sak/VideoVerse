@@ -407,8 +407,8 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
       {/* Header Panel info */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/60 pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="w-8.5 h-8.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-            <Globe className="w-4.5 h-4.5 text-emerald-400 animate-pulse" />
+          <div className="w-8.5 h-8.5 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+            <Globe className="w-4.5 h-4.5 text-red-400 animate-pulse" />
           </div>
           <div>
             <h4 className="text-sm font-bold text-slate-100 flex items-center gap-1.5 uppercase tracking-wide">
@@ -423,7 +423,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
         <button
           type="button"
           onClick={handleResetToDefaults}
-          className="text-[10px] px-2.5 py-1 rounded bg-slate-950 border border-slate-800 hover:border-emerald-500/30 text-slate-400 hover:text-emerald-400 font-bold transition-all cursor-pointer select-none"
+          className="text-[10px] px-2.5 py-1 rounded bg-slate-950 border border-slate-800 hover:border-red-500/30 text-slate-400 hover:text-red-400 font-bold transition-all cursor-pointer select-none"
         >
           Reset To Standard
         </button>
@@ -436,7 +436,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
           onClick={() => setActiveTab("onpage")}
           className={`px-4 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider text-[10px] ${
             activeTab === "onpage"
-              ? "bg-emerald-500 text-slate-950 font-extrabold"
+              ? "bg-red-500 text-slate-950 font-extrabold"
               : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
           }`}
         >
@@ -448,7 +448,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
           onClick={() => setActiveTab("offpage")}
           className={`px-4 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer uppercase tracking-wider text-[10px] ${
             activeTab === "offpage"
-              ? "bg-emerald-500 text-slate-950 font-extrabold"
+              ? "bg-red-500 text-slate-950 font-extrabold"
               : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
           }`}
         >
@@ -468,10 +468,10 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center text-[10.5px]">
                 <label className="text-slate-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+                  <Sliders className="w-3.5 h-3.5 text-red-400" />
                   <span>Meta Title Tag</span>
                 </label>
-                <span className={`font-mono text-[9px] ${isTitleIdeal ? "text-emerald-400" : "text-amber-500 font-semibold"}`}>
+                <span className={`font-mono text-[9px] ${isTitleIdeal ? "text-red-400" : "text-amber-500 font-semibold"}`}>
                   {metaTitle.length} / 60 characters
                 </span>
               </div>
@@ -479,7 +479,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 type="text"
                 value={metaTitle}
                 onChange={(e) => setMetaTitle(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 focus:border-emerald-500 rounded-lg text-slate-200 text-xs text-left placeholder-slate-705 outline-none transition-all font-sans"
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 focus:border-red-500 rounded-lg text-slate-200 text-xs text-left placeholder-slate-705 outline-none transition-all font-sans"
                 placeholder="Title that represents your streaming directory in listing feeds"
               />
             </div>
@@ -487,10 +487,10 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between items-center text-[10.5px]">
                 <label className="text-slate-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                  <FileText className="w-3.5 h-3.5 text-red-400" />
                   <span>Meta Description</span>
                 </label>
-                <span className={`font-mono text-[9px] ${isDescIdeal ? "text-emerald-400" : "text-amber-500 font-semibold"}`}>
+                <span className={`font-mono text-[9px] ${isDescIdeal ? "text-red-400" : "text-amber-500 font-semibold"}`}>
                   {metaDescription.length} / 160 characters
                 </span>
               </div>
@@ -498,7 +498,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 value={metaDescription}
                 rows={3}
                 onChange={(e) => setMetaDescription(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 focus:border-emerald-500 rounded-lg text-slate-200 text-xs text-left placeholder-slate-705 outline-none transition-all leading-relaxed"
+                className="w-full px-3 py-2 bg-slate-950 border border-slate-850 focus:border-red-500 rounded-lg text-slate-200 text-xs text-left placeholder-slate-705 outline-none transition-all leading-relaxed"
                 placeholder="Summary snippet displayed beneath web page title links on global Search Engine index logs..."
               />
             </div>
@@ -509,7 +509,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
             
             <div className="flex justify-between items-center text-[10.5px]">
               <label className="text-slate-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <LayoutList className="w-3.5 h-3.5 text-emerald-400" />
+                <LayoutList className="w-3.5 h-3.5 text-red-400" />
                 <span>Active Index Keywords</span>
               </label>
               <span className="font-mono text-[9px] text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-850/50">
@@ -548,12 +548,12 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 value={newKeyword}
                 onChange={(e) => setNewKeyword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleAddKeyword(newKeyword)}
-                className="w-full text-xs px-2.5 py-1.5 bg-slate-950 border border-slate-900 rounded focus:border-emerald-500/50 outline-none placeholder-slate-700"
+                className="w-full text-xs px-2.5 py-1.5 bg-slate-950 border border-slate-900 rounded focus:border-red-500/50 outline-none placeholder-slate-700"
               />
               <button
                 type="button"
                 onClick={() => handleAddKeyword(newKeyword)}
-                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 font-bold rounded text-xs select-none flex items-center gap-1 cursor-pointer transition-all active:scale-98 shrink-0"
+                className="bg-red-500 hover:bg-red-400 text-slate-950 px-3 py-1.5 font-bold rounded text-xs select-none flex items-center gap-1 cursor-pointer transition-all active:scale-98 shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Inject</span>
@@ -574,8 +574,8 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                       onClick={() => handleAddKeyword(preset)}
                       className={`text-[9px] px-2 py-0.5 rounded border transition-all ${
                         isAlreadyIn 
-                          ? "bg-emerald-500/10 text-emerald-400/50 border-emerald-500/15 cursor-not-allowed font-medium" 
-                          : "bg-slate-900 hover:bg-slate-850 text-slate-400 hover:text-slate-200 border-slate-850 hover:border-emerald-500/20 cursor-pointer"
+                          ? "bg-red-500/10 text-red-400/50 border-red-500/15 cursor-not-allowed font-medium" 
+                          : "bg-slate-900 hover:bg-slate-850 text-slate-400 hover:text-slate-200 border-slate-850 hover:border-red-500/20 cursor-pointer"
                       }`}
                     >
                       {isAlreadyIn ? `✓ ${preset}` : `+ ${preset}`}
@@ -594,9 +594,9 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
               className="flex justify-between items-center cursor-pointer select-none"
             >
               <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Globe className="w-4 h-4 text-emerald-400 shrink-0" />
+                <Globe className="w-4 h-4 text-red-400 shrink-0" />
                 <span>Dynamic Robots XML Sitemap Builder</span>
-                <span className="bg-emerald-500/15 text-emerald-450 border border-emerald-500/20 text-[9px] font-mono px-2 py-0.5 rounded-full uppercase">
+                <span className="bg-red-500/15 text-red-450 border border-red-500/20 text-[9px] font-mono px-2 py-0.5 rounded-full uppercase">
                   Google compatible
                 </span>
               </h5>
@@ -606,7 +606,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
             {showSitemap && (
               <div className="flex flex-col gap-3 animate-fadeIn mt-1 pt-2 border-t border-slate-900">
                 <p className="text-[10px] text-slate-400 leading-relaxed">
-                  Search engine bots index your platform much faster when you submit a structured <code className="bg-slate-900 text-emerald-400 px-1 py-0.5 rounded">sitemap.xml</code> mapping all videos. Our engine automatically nests active play URLs and thumbnail assets.
+                  Search engine bots index your platform much faster when you submit a structured <code className="bg-slate-900 text-red-400 px-1 py-0.5 rounded">sitemap.xml</code> mapping all videos. Our engine automatically nests active play URLs and thumbnail assets.
                 </p>
                 <div className="bg-slate-950 p-3 rounded-lg border border-slate-900 relative max-h-[180px] overflow-y-auto no-scrollbar">
                   <pre className="font-mono text-[9.5px] text-slate-400 text-left whitespace-pre-wrap">
@@ -617,15 +617,15 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                   <button
                     type="button"
                     onClick={handleCopySitemap}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-slate-900 border border-slate-800 hover:border-emerald-500/30 text-slate-300 hover:text-emerald-400 font-bold transition-all cursor-pointer"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-slate-900 border border-slate-800 hover:border-red-500/30 text-slate-300 hover:text-red-400 font-bold transition-all cursor-pointer"
                   >
-                    {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    {isCopied ? <Check className="w-3.5 h-3.5 text-red-400" /> : <Copy className="w-3.5 h-3.5" />}
                     <span>{isCopied ? "Copied!" : "Copy XML Schema"}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleDownloadSitemap}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition-all cursor-pointer"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded bg-red-500 hover:bg-red-400 text-slate-950 font-extrabold transition-all cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     <span>Download sitemap.xml</span>
@@ -642,7 +642,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
               className="flex justify-between items-center cursor-pointer select-none"
             >
               <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                <Sparkles className="w-4 h-4 text-red-400 shrink-0" />
                 <span>Rich Snippets: Schema JSON-LD Checker</span>
                 <span className="bg-sky-500/10 text-sky-400 border border-sky-500/15 text-[9px] font-mono px-2 py-0.5 rounded-full uppercase">
                   Active in Background
@@ -693,7 +693,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
               </p>
             </div>
             <p className="text-[9px] text-slate-500 leading-normal">
-              Based on search guidelines, key phrases like <strong className="text-emerald-450">{keywords.slice(0, 4).join(", ")}</strong> matched inside title tags improve organic CTR index results.
+              Based on search guidelines, key phrases like <strong className="text-red-450">{keywords.slice(0, 4).join(", ")}</strong> matched inside title tags improve organic CTR index results.
             </p>
           </div>
 
@@ -712,9 +712,9 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
 
             {showSEOManual && (
               <div className="space-y-3.5 text-[11px] text-slate-300 leading-relaxed border-t border-slate-900 pt-2.5 animate-fadeIn">
-                <div className="p-2.5 rounded-lg bg-emerald-500/5 border border-emerald-500/10 space-y-2">
-                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                    <RefreshCw className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <div className="p-2.5 rounded-lg bg-red-500/5 border border-red-500/10 space-y-2">
+                  <span className="text-xs font-bold text-red-400 flex items-center gap-1">
+                    <RefreshCw className="w-3.5 h-3.5 text-red-400 shrink-0" />
                     <span>Dynamic Video SEO Applied!</span>
                   </span>
                   <p className="text-slate-450 text-[10px]">
@@ -758,20 +758,20 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
           {/* Active Diagnostic Checklist */}
           <div className="p-4 bg-slate-950/45 border border-slate-850 rounded-xl flex flex-col gap-2.5">
             <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <Sparkles className="w-3.5 h-3.5 text-red-400" />
               <span>Real-Time Index Readiness</span>
             </div>
 
             <div className="space-y-2 text-[10.5px]">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
                 <span className="text-slate-350 flex-1">
                   Keywords injected in HTML head tag.
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 {isTitleIdeal ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
                 ) : (
                   <div className="w-3.5 h-3.5 rounded-full border border-amber-500/50 bg-amber-500/10 shrink-0" />
                 )}
@@ -781,7 +781,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
               </div>
               <div className="flex items-center gap-2">
                 {isDescIdeal ? (
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
                 ) : (
                   <div className="w-3.5 h-3.5 rounded-full border border-amber-500/50 bg-amber-500/10 shrink-0" />
                 )}
@@ -790,14 +790,14 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 </span>
               </div>
               <div className="flex items-center gap-2 border-t border-slate-900 pt-1.5 mt-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="text-emerald-400/90 font-medium flex-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                <span className="text-red-400/90 font-medium flex-1">
                   Dynamic Video swapping metadata tag support active!
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                <span className="text-emerald-405/90 font-medium flex-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
+                <span className="text-red-405/90 font-medium flex-1">
                   Google JSON-LD VideoObject rich snippet active!
                 </span>
               </div>
@@ -815,10 +815,10 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
             <div className="p-5 bg-slate-950/65 rounded-xl border border-slate-850/60 flex flex-col gap-4">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-900 justify-between">
                 <div className="flex items-center gap-2">
-                  <Link className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <Link className="w-4 h-4 text-red-400 shrink-0" />
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Authority Backlink & Embed Hub</span>
                 </div>
-                <span className="text-[9px] font-mono bg-slate-900 border border-slate-850 text-emerald-400 px-2 py-0.5 rounded font-bold uppercase">
+                <span className="text-[9px] font-mono bg-slate-900 border border-slate-850 text-red-400 px-2 py-0.5 rounded font-bold uppercase">
                   Backlinks = Rank #1
                 </span>
               </div>
@@ -829,7 +829,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 <select
                   value={selectedVideoId}
                   onChange={(e) => setSelectedVideoId(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-emerald-500 cursor-pointer"
+                  className="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-2 outline-none focus:border-red-500 cursor-pointer"
                 >
                   {videos.map((vid) => (
                     <option key={vid.id} value={vid.id}>
@@ -851,7 +851,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h5 className="text-[11px] font-bold text-slate-200 truncate">{selectedVideo.title}</h5>
-                    <p className="text-[9px] text-emerald-400 font-mono mt-1">
+                    <p className="text-[9px] text-red-400 font-mono mt-1">
                       Direct Node Target • {window.location.origin}/?video={selectedVideo.id}
                     </p>
                     <p className="text-[9px] text-slate-500 line-clamp-1 mt-0.5">
@@ -869,7 +869,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                     id="emb-responsive"
                     checked={embedResponsive}
                     onChange={(e) => setEmbedResponsive(e.target.checked)}
-                    className="accent-emerald-500 rounded cursor-pointer w-3.5 h-3.5"
+                    className="accent-red-500 rounded cursor-pointer w-3.5 h-3.5"
                   />
                   <label htmlFor="emb-responsive" className="text-[10.5px] text-slate-300 font-medium cursor-pointer">
                     Fluid Responsive Dimensions
@@ -881,7 +881,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                     id="emb-autoplay"
                     checked={embedAutoPlay}
                     onChange={(e) => setEmbedAutoPlay(e.target.checked)}
-                    className="accent-emerald-500 rounded cursor-pointer w-3.5 h-3.5"
+                    className="accent-red-500 rounded cursor-pointer w-3.5 h-3.5"
                   />
                   <label htmlFor="emb-autoplay" className="text-[10.5px] text-slate-300 font-medium cursor-pointer">
                     Autoplay Inside Embed Frame
@@ -894,7 +894,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-[10px]">
                     <span className="text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                      <FileCode className="w-3.5 h-3.5 text-emerald-400" />
+                      <FileCode className="w-3.5 h-3.5 text-red-400" />
                       <span>Standard iframe Embed Script</span>
                     </span>
                     <button
@@ -903,7 +903,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                         navigator.clipboard.writeText(getHtmlEmbedCode());
                         triggerNotification("Iframe script copied!");
                       }}
-                      className="text-[9px] px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/20 text-slate-400 hover:text-emerald-400 font-semibold cursor-pointer flex items-center gap-1 transition-colors"
+                      className="text-[9px] px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-red-500/20 text-slate-400 hover:text-red-400 font-semibold cursor-pointer flex items-center gap-1 transition-colors"
                     >
                       <Copy className="w-2.5 h-2.5" />
                       <span>Copy Frame Snippet</span>
@@ -917,7 +917,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 <div className="flex flex-col gap-1.5">
                   <div className="flex justify-between items-center text-[10px]">
                     <span className="text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                      <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
+                      <ExternalLink className="w-3.5 h-3.5 text-red-400" />
                       <span>Community Forum BBCode (Backlink builder)</span>
                     </span>
                     <button
@@ -926,13 +926,13 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                         navigator.clipboard.writeText(getBBCode());
                         triggerNotification("BBCode snippet copied!");
                       }}
-                      className="text-[9px] px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/20 text-slate-400 hover:text-emerald-400 font-semibold cursor-pointer flex items-center gap-1 transition-colors"
+                      className="text-[9px] px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-red-500/20 text-slate-400 hover:text-red-400 font-semibold cursor-pointer flex items-center gap-1 transition-colors"
                     >
                       <Copy className="w-2.5 h-2.5" />
                       <span>Copy BBCode</span>
                     </button>
                   </div>
-                  <pre className="p-2.5 bg-slate-950 rounded-lg border border-slate-900 text-[9px] font-mono text-orange-400/80 max-h-24 overflow-y-auto overflow-x-auto text-left whitespace-pre">
+                  <pre className="p-2.5 bg-slate-950 rounded-lg border border-slate-900 text-[9px] font-mono text-red-400/80 max-h-24 overflow-y-auto overflow-x-auto text-left whitespace-pre">
                     {getBBCode()}
                   </pre>
                 </div>
@@ -943,7 +943,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
             <div className="p-5 bg-slate-950/65 rounded-xl border border-slate-850/60 flex flex-col gap-4">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-900 justify-between">
                 <div className="flex items-center gap-2">
-                  <Radio className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <Radio className="w-4 h-4 text-red-400 shrink-0" />
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Dynamic XML-RPC Hub Submission (Ping Center)</span>
                 </div>
                 <span className="text-[9px] font-mono bg-slate-900 border border-slate-850 text-sky-450 px-2 py-0.5 rounded font-bold uppercase shrink-0">
@@ -968,7 +968,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                     const isInfo = log.startsWith("[INFO]");
                     const isInit = log.startsWith("[INIT]");
                     let textClass = "text-slate-400";
-                    if (isSuccess) textClass = "text-emerald-400 font-medium";
+                    if (isSuccess) textClass = "text-red-400 font-medium";
                     if (isInfo) textClass = "text-sky-400";
                     if (isInit) textClass = "text-amber-400 font-bold";
                     
@@ -980,7 +980,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                   })
                 )}
                 {isPinging && (
-                  <div className="text-[9.5px] font-mono text-emerald-450 flex items-center gap-1 text-left animate-pulse mt-0.5">
+                  <div className="text-[9.5px] font-mono text-red-450 flex items-center gap-1 text-left animate-pulse mt-0.5">
                     <span>⚡ Processing next index server...</span>
                   </div>
                 )}
@@ -991,7 +991,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
               {pingProgress > 0 && (
                 <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-850">
                   <div 
-                    className="bg-emerald-500 h-full transition-all duration-300 animate-none"
+                    className="bg-red-500 h-full transition-all duration-300 animate-none"
                     style={{ width: `${pingProgress}%` }}
                   />
                 </div>
@@ -1005,7 +1005,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 className={`py-2 w-full rounded-xl font-bold text-xs flex items-center justify-center gap-2 select-none uppercase tracking-wide cursor-pointer transition-all ${
                   isPinging 
                     ? "bg-slate-900 text-slate-505 border border-slate-855" 
-                    : "bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold focus:ring-2 focus:ring-emerald-700"
+                    : "bg-red-500 hover:bg-red-400 text-slate-950 font-extrabold focus:ring-2 focus:ring-red-700"
                 }`}
               >
                 <Radio className={`w-3.5 h-3.5 ${isPinging ? "animate-spin text-slate-500" : "text-slate-950"}`} />
@@ -1023,7 +1023,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                 className="flex justify-between items-center cursor-pointer select-none pb-1"
               >
                 <div className="flex items-center gap-2">
-                  <Rss className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <Rss className="w-4 h-4 text-red-400 shrink-0" />
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-300">RSS 2.0 Syndication Feed</span>
                 </div>
                 {showRssFeed ? <ChevronUp className="w-3.5 h-3.5 text-slate-450" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-450" />}
@@ -1042,7 +1042,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                     <button
                       type="button"
                       onClick={handleCopyRss}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/35 text-slate-300 hover:text-emerald-400 font-bold transition-all cursor-pointer text-[10px] uppercase tracking-wider scale-100"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-red-500/35 text-slate-300 hover:text-red-400 font-bold transition-all cursor-pointer text-[10px] uppercase tracking-wider scale-100"
                     >
                       <Copy className="w-3.5 h-3.5 animate-none" />
                       <span>Copy RSS</span>
@@ -1050,7 +1050,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                     <button
                       type="button"
                       onClick={handleDownloadRss}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold transition-all cursor-pointer text-[10px] uppercase tracking-wider scale-100"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-400 text-slate-950 font-extrabold transition-all cursor-pointer text-[10px] uppercase tracking-wider scale-100"
                     >
                       <Download className="w-3.5 h-3.5 animate-none" />
                       <span>Download Feed</span>
@@ -1063,7 +1063,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
             {/* 2. Outreach & Authority Pitch Builder */}
             <div className="p-5 bg-slate-950/65 rounded-xl border border-slate-850/60 flex flex-col gap-3.5">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-900">
-                <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
+                <Mail className="w-4 h-4 text-red-400 shrink-0" />
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Backlink Hub Outreach Template</span>
               </div>
 
@@ -1079,7 +1079,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                         onClick={() => setOutreachTone(tone)}
                         className={`text-[9.5px] py-1 rounded-md border font-bold capitalize select-none cursor-pointer transition-all ${
                           outreachTone === tone 
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" 
+                            ? "bg-red-500/10 text-red-400 border-red-500/30" 
                             : "bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
                         }`}
                       >
@@ -1095,7 +1095,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                     type="text"
                     value={outreachRecipient}
                     onChange={(e) => setOutreachRecipient(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-1.5 outline-none focus:border-emerald-500 text-left"
+                    className="w-full bg-slate-900 border border-slate-800 text-slate-200 text-xs rounded-lg px-3 py-1.5 outline-none focus:border-red-500 text-left"
                     placeholder="e.g. DailyMotion Curator"
                   />
                 </div>
@@ -1120,7 +1120,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
                           navigator.clipboard.writeText(getOutreachEmail().body);
                           triggerNotification("Outreach text copied!");
                         }}
-                        className="text-[9px] px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/20 text-slate-400 hover:text-emerald-400 cursor-pointer flex items-center gap-1 font-semibold transition-colors"
+                        className="text-[9px] px-2 py-0.5 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-red-500/20 text-slate-400 hover:text-red-400 cursor-pointer flex items-center gap-1 font-semibold transition-colors"
                       >
                         <Copy className="w-2.5 h-2.5" />
                         <span>Copy Email pitch</span>
@@ -1142,19 +1142,19 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Off-Page Authority Checklist</span>
               <ul className="space-y-1.5 text-[10px] text-slate-400">
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
                   <span>Interactive Frame embedding supported (high security sandbox style).</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
                   <span>Forum-perfect BBCode generator calibrated with active imagery.</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
                   <span>Dynamic RSS directory feed updated matching Yahoo Media specs.</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-red-400 shrink-0" />
                   <span>Automated search bot notifications dispatched via XML-RPC bulk ping.</span>
                 </li>
               </ul>
@@ -1164,7 +1164,7 @@ export default function SEODashboard({ videos = [] }: SEODashboardProps) {
       )}
 
       {successMsg && (
-        <div className="fixed bottom-4 right-4 bg-emerald-500 text-slate-950 text-[11px] font-bold px-3.5 py-2 rounded-xl shadow-lg border border-emerald-450 z-50 flex items-center gap-1.5 select-none animate-bounce">
+        <div className="fixed bottom-4 right-4 bg-red-500 text-slate-950 text-[11px] font-bold px-3.5 py-2 rounded-xl shadow-lg border border-red-450 z-50 flex items-center gap-1.5 select-none animate-bounce">
           <CheckCircle2 className="w-4 h-4 text-slate-950" />
           <span>{successMsg}</span>
         </div>

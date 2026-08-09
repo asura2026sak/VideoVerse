@@ -44,10 +44,10 @@ export default function Watchlist({
   if (watchlistVideos.length === 0) return null;
 
   return (
-    <div className="mt-4 sm:mt-0 bg-slate-900/60 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-slate-800/80 shadow-lg flex flex-col gap-4">
-      <div className="flex items-center justify-between border-b border-slate-800/60 pb-3">
+    <div className="mt-4 sm:mt-0 bg-[#1f1f1f] backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-[#303030] shadow-lg flex flex-col gap-4">
+      <div className="flex items-center justify-between border-b border-[#303030] pb-3">
         <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-          <Bookmark className="w-4.5 h-4.5 text-amber-400 fill-amber-400" />
+          <Bookmark className="w-4.5 h-4.5 text-[#ff0000] fill-[#ff0000]" />
           <span>My Saved Watch Later ({watchlistVideos.length})</span>
         </h3>
         <p className="text-[10px] text-slate-400 italic">Saved in your local storage</p>
@@ -66,7 +66,7 @@ export default function Watchlist({
               {/* Thumbnail Container */}
               <div 
                 onClick={() => onSelectVideo(video)}
-                className="relative aspect-video rounded-lg overflow-hidden bg-slate-950 border border-slate-800/80 hover:border-emerald-500/50 transition-all duration-350"
+                className="relative aspect-video rounded-lg overflow-hidden bg-slate-950 border border-slate-800/80 hover:border-red-500/50 transition-all duration-350"
               >
                 {video.thumbnailUrl ? (
                   <img 
@@ -117,7 +117,7 @@ export default function Watchlist({
               </div>
 
               {/* Title & Creator */}
-              <div className="mt-2 text-[11px] font-bold text-slate-200 line-clamp-1 group-hover:text-emerald-450 transition-colors" onClick={() => onSelectVideo(video)}>
+              <div className="mt-2 text-[11px] font-bold text-slate-200 line-clamp-1 group-hover:text-red-450 transition-colors" onClick={() => onSelectVideo(video)}>
                 {video.title}
               </div>
 

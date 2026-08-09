@@ -455,7 +455,7 @@ export default function VideoPlayer({
           isFullscreen 
             ? "fixed inset-0 z-[9999] w-screen h-[100dvh] flex items-center justify-center bg-black" 
             : ""
-        } ${isDraggingOver ? "ring-4 ring-emerald-500 scale-[0.99] p-1" : ""}`}
+        } ${isDraggingOver ? "ring-4 ring-red-500 scale-[0.99] p-1" : ""}`}
         onMouseMove={handleMouseMove}
         onMouseLeave={() => isPlaying && isFullscreen && setShowControls(false)}
         onDragEnter={handleDragEnter}
@@ -466,7 +466,7 @@ export default function VideoPlayer({
         {isFullscreen && (
           <button
             onClick={() => setIsFullscreen(false)}
-            className="absolute top-4 right-4 z-[10000] p-3 rounded-full bg-black/60 hover:bg-slate-800/80 hover:text-emerald-400 border border-slate-705 text-white cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center justify-center shadow-lg"
+            className="absolute top-4 right-4 z-[10000] p-3 rounded-full bg-black/60 hover:bg-slate-800/80 hover:text-red-400 border border-slate-705 text-white cursor-pointer hover:scale-105 active:scale-95 transition-all flex items-center justify-center shadow-lg"
             title="Exit Fullscreen"
           >
             <X className="w-5 h-5 stroke-[2.5]" />
@@ -537,7 +537,7 @@ export default function VideoPlayer({
 
         {/* Drag Overlay visual indicator */}
         {isDraggingOver && (
-          <div className="absolute inset-0 bg-emerald-520/20 backdrop-blur-xs flex flex-col items-center justify-center gap-2 border border-emerald-500 text-emerald-400 z-50">
+          <div className="absolute inset-0 bg-red-520/20 backdrop-blur-xs flex flex-col items-center justify-center gap-2 border border-red-500 text-red-400 z-50">
             <svg className="w-12 h-12 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
@@ -548,7 +548,7 @@ export default function VideoPlayer({
         {/* Loading Spinner */}
         {!(driveId && useIframeFallback) && isLoading && !hasError && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-xs transition-opacity duration-300">
-            <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         )}
 
@@ -556,7 +556,7 @@ export default function VideoPlayer({
         {!(driveId && useIframeFallback) && hasError && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 px-6 text-center z-10 border border-slate-900">
             <div className="w-10 h-10 rounded-full bg-slate-800/80 flex items-center justify-center mb-2.5">
-              <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
               </svg>
             </div>
@@ -564,12 +564,12 @@ export default function VideoPlayer({
             <p className="text-[11px] text-slate-400 mt-1 max-w-sm">
               Remote sample video servers might be blocked by browser iframe guidelines.
             </p>
-            <p className="text-[11px] text-emerald-400 font-bold mt-1 max-w-sm">
+            <p className="text-[11px] text-red-400 font-bold mt-1 max-w-sm">
               We highly recommend selecting or dragging any local <span className="underline">.mp4</span> computer video file directly here to load.
             </p>
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="mt-3 px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg text-[10px] transition-all cursor-pointer uppercase tracking-wider"
+              className="mt-3 px-3.5 py-1.5 bg-red-500 hover:bg-red-400 text-slate-950 font-bold rounded-lg text-[10px] transition-all cursor-pointer uppercase tracking-wider"
             >
               Choose local .mp4 File
             </button>
@@ -585,7 +585,7 @@ export default function VideoPlayer({
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="p-3 rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/40 hover:bg-emerald-400 hover:scale-110 active:scale-95 transition-all duration-200"
+              className="p-3 rounded-full bg-red-500 text-white shadow-lg shadow-red-500/40 hover:bg-red-400 hover:scale-110 active:scale-95 transition-all duration-200"
             >
               <Play fill="currentColor" className="w-5 h-5 translate-x-0.5" />
             </motion.div>
@@ -609,25 +609,25 @@ export default function VideoPlayer({
                 onChange={handleSeek}
                 className="w-full h-1.5 bg-white/20 cursor-pointer appearance-none outline-none transition-all duration-150 relative z-30"
                 style={{
-                  background: `linear-gradient(to right, #ffffff 0%, #ffffff ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) 100%)`
+                  background: `linear-gradient(to right, #ff0000 0%, #ff0000 ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) ${(currentTime / (duration || 1)) * 100}%, rgba(255,255,255,0.2) 100%)`
                 }}
               />
               <style>{`
                 input[type="range"]::-webkit-slider-thumb {
                   -webkit-appearance: none;
                   appearance: none;
-                  width: 4px;
-                  height: 20px;
-                  background: #ffffff;
-                  border-radius: 0px;
+                  width: 12px;
+                  height: 12px;
+                  background: #ff0000;
+                  border-radius: 50%;
                   cursor: pointer;
                   box-shadow: 0 0 10px rgba(0,0,0,0.5);
                 }
                 input[type="range"]::-moz-range-thumb {
-                  width: 4px;
-                  height: 20px;
-                  background: #ffffff;
-                  border-radius: 0px;
+                  width: 12px;
+                  height: 12px;
+                  background: #ff0000;
+                  border-radius: 50%;
                   cursor: pointer;
                   box-shadow: 0 0 10px rgba(0,0,0,0.5);
                   border: none;
@@ -708,7 +708,7 @@ export default function VideoPlayer({
                   title={`Auto-Play Next is ${autoplayNext ? "ON" : "OFF"}`}
                 >
                   <span className="text-slate-400">Autoplay</span>
-                  <div className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full border border-transparent transition-colors duration-200 ease-in-out ${autoplayNext ? "bg-emerald-500 border-emerald-600" : "bg-zinc-800 border-zinc-700"}`}>
+                  <div className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full border border-transparent transition-colors duration-200 ease-in-out ${autoplayNext ? "bg-red-500 border-red-600" : "bg-zinc-800 border-zinc-700"}`}>
                     <span className={`pointer-events-none inline-block h-3 w-3 transform rounded-full bg-white shadow-md transition duration-200 ease-in-out ${autoplayNext ? "translate-x-3.5" : "translate-x-0.5"}`} />
                   </div>
                 </button>
@@ -748,11 +748,11 @@ export default function VideoPlayer({
                               setShowSpeedControls(false);
                             }}
                             className={`px-3 py-2 text-left hover:bg-white/10 transition-colors flex items-center justify-between cursor-pointer ${
-                              playbackRate === r ? "text-emerald-400 font-bold bg-white/5" : "text-slate-300"
+                              playbackRate === r ? "text-red-400 font-bold bg-white/5" : "text-slate-300"
                             }`}
                           >
                             <span>{r === 1 ? "1.0x (Normal)" : `${r}x`}</span>
-                            {playbackRate === r && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                            {playbackRate === r && <span className="w-1.5 h-1.5 rounded-full bg-red-400" />}
                           </button>
                         ))}
                       </motion.div>
@@ -771,7 +771,7 @@ export default function VideoPlayer({
                     className="p-1 hover:text-white transition-colors cursor-pointer"
                     title="Video Settings"
                   >
-                    <Settings className={`w-5 h-5 ${showFitControls ? "animate-spin-slow text-emerald-400" : ""}`} />
+                    <Settings className={`w-5 h-5 ${showFitControls ? "animate-spin-slow text-red-400" : ""}`} />
                   </button>
 
                   <AnimatePresence>
@@ -797,11 +797,11 @@ export default function VideoPlayer({
                               setShowFitControls(false);
                             }}
                             className={`px-3 py-2 text-left hover:bg-white/10 transition-colors flex items-center justify-between cursor-pointer ${
-                              videoFitMode === item.mode ? "text-emerald-400 font-semibold bg-white/5" : "text-slate-300"
+                              videoFitMode === item.mode ? "text-red-400 font-semibold bg-white/5" : "text-slate-300"
                             }`}
                           >
                             <span>{item.label}</span>
-                            {videoFitMode === item.mode && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />}
+                            {videoFitMode === item.mode && <span className="w-1.5 h-1.5 rounded-full bg-red-400" />}
                           </button>
                         ))}
                         
@@ -822,7 +822,7 @@ export default function VideoPlayer({
                             >
                               -
                             </button>
-                            <span className="font-mono text-[10px] text-emerald-400 font-bold min-w-[24px] text-center">
+                            <span className="font-mono text-[10px] text-red-400 font-bold min-w-[24px] text-center">
                               {zoomScale.toFixed(1)}x
                             </span>
                             <button
@@ -910,9 +910,9 @@ export default function VideoPlayer({
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                    className="absolute bottom-full left-0 mb-3 px-3 py-1.5 bg-slate-950 text-emerald-400 text-xs font-semibold rounded-lg border border-slate-800 shadow-xl whitespace-nowrap flex items-center gap-1.5 z-50"
+                    className="absolute bottom-full left-0 mb-3 px-3 py-1.5 bg-slate-950 text-red-400 text-xs font-semibold rounded-lg border border-slate-800 shadow-xl whitespace-nowrap flex items-center gap-1.5 z-50"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-ping"></span>
                     Link copied to clipboard!
                   </motion.div>
                 )}

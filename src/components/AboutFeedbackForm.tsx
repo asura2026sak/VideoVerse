@@ -27,7 +27,7 @@ export default function AboutFeedbackForm() {
   return (
     <div className="bg-slate-900/40 border border-slate-850 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row gap-8 items-start justify-between">
       <div className="max-w-md w-full">
-        <span className="text-[10px] bg-emerald-400/10 border border-emerald-500/20 text-emerald-400 font-mono uppercase tracking-widest font-bold px-2.5 py-1 rounded-md">
+        <span className="text-[10px] bg-red-400/10 border border-red-500/20 text-red-400 font-mono uppercase tracking-widest font-bold px-2.5 py-1 rounded-md">
           COMMUNITY FEEDBACK
         </span>
         <h3 className="text-xl font-extrabold text-slate-100 mt-4 tracking-tight">
@@ -44,7 +44,7 @@ export default function AboutFeedbackForm() {
           </div>
           <div className="flex items-center gap-1.5 text-slate-500">
             <span>Server region:</span>
-            <span className="text-emerald-400 font-bold">Cloud Run Sandbox East</span>
+            <span className="text-red-400 font-bold">Cloud Run Sandbox East</span>
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@ export default function AboutFeedbackForm() {
       <div className="bg-slate-950/60 border border-slate-850 p-6 rounded-2xl w-full max-w-lg transition-all relative overflow-hidden">
         {isSubmitted ? (
           <div className="flex flex-col items-center justify-center text-center py-8">
-            <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 mb-4 animate-bounce">
+            <div className="w-12 h-12 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center justify-center text-red-400 mb-4 animate-bounce">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <h4 className="text-base font-bold text-white tracking-tight">
@@ -63,7 +63,7 @@ export default function AboutFeedbackForm() {
             </p>
             <button
               onClick={() => setIsSubmitted(false)}
-              className="mt-5 px-4 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/20 text-slate-300 hover:text-emerald-400 text-xs font-mono font-bold rounded-lg transition-all cursor-pointer"
+              className="mt-5 px-4 py-2 bg-slate-900 border border-slate-800 hover:border-red-500/20 text-slate-300 hover:text-red-400 text-xs font-mono font-bold rounded-lg transition-all cursor-pointer"
             >
               Send Another Ticket
             </button>
@@ -80,7 +80,7 @@ export default function AboutFeedbackForm() {
                   placeholder="Anonymous Viewer"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="px-3.5 py-2 bg-slate-900/60 border border-slate-800 focus:border-emerald-500/40 text-slate-100 rounded-xl text-xs font-sans placeholder-slate-600 focus:outline-none transition-all"
+                  className="px-3.5 py-2 bg-slate-900/60 border border-slate-800 focus:border-red-500/40 text-slate-100 rounded-xl text-xs font-sans placeholder-slate-600 focus:outline-none transition-all"
                 />
               </div>
 
@@ -94,7 +94,7 @@ export default function AboutFeedbackForm() {
                   placeholder="name@domain.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="px-3.5 py-2 bg-slate-900/60 border border-slate-800 focus:border-emerald-500/40 text-slate-100 rounded-xl text-xs font-sans placeholder-slate-600 focus:outline-none transition-all"
+                  className="px-3.5 py-2 bg-slate-900/60 border border-slate-800 focus:border-red-500/40 text-slate-100 rounded-xl text-xs font-sans placeholder-slate-600 focus:outline-none transition-all"
                 />
               </div>
             </div>
@@ -109,14 +109,14 @@ export default function AboutFeedbackForm() {
                 placeholder="Suggest a new design, streaming speed feedback, or bug report..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="px-3.5 py-2 bg-slate-900/60 border border-slate-800 focus:border-emerald-500/40 text-slate-100 rounded-xl text-xs font-sans placeholder-slate-600 focus:outline-none transition-all resize-none"
+                className="px-3.5 py-2 bg-slate-900/60 border border-slate-800 focus:border-red-500/40 text-slate-100 rounded-xl text-xs font-sans placeholder-slate-600 focus:outline-none transition-all resize-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="mt-2 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-600/50 text-slate-950 font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-emerald-500/15 cursor-pointer disabled:cursor-not-allowed"
+              className="mt-2 py-2.5 px-4 bg-red-500 hover:bg-red-400 disabled:bg-red-600/50 text-slate-950 font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-red-500/15 cursor-pointer disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>
