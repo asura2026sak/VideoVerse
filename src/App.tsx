@@ -292,7 +292,7 @@ export default function App() {
   // Copy share link from the modal player
   const [isShareCopied, setIsShareCopied] = useState(false);
   const handleShareVideo = () => {
-    const shareUrl = `${window.location.origin}${window.location.pathname}?video=${activeVideo.id}`;
+    const shareUrl = `${window.location.origin}/`;
     navigator.clipboard.writeText(shareUrl).then(() => {
       setIsShareCopied(true);
       setTimeout(() => setIsShareCopied(false), 2000);
